@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # DocuLens AI
 
 An AI-powered document processing and analysis API built with FastAPI.
@@ -28,3 +29,7 @@ An AI-powered document processing and analysis API built with FastAPI.
    ```bash
    curl http://localhost:8000/api/v1/health
    ```
+=======
+# doculens-ai
+A Multimodal document intelligence system
+>>>>>>> 505bd66081230abe9217f40059fe18b8d9904ed0
