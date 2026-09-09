@@ -1,0 +1,140 @@
+{
+  "step1": {
+    "status": "PASS",
+    "config": {
+      "LLM_PROVIDER": "mock",
+      "LLM_MODEL": "gemini-3.7-flash",
+      "GEMINI_BASE_URL": "https://generativelanguage.googleapis.com/v1beta/openai",
+      "GEMINI_API_KEY_IS_SET": false,
+      "LLM_API_KEY_IS_SET": false
+    }
+  },
+  "step2": {
+    "status": "BLOCKED",
+    "reason": "GEMINI_API_KEY environment variable not set in this environment"
+  },
+  "step3": {
+    "status": "PASS",
+    "doc_id": "doc_f8e18898136a",
+    "page_count": 2,
+    "chunks_created": 2,
+    "traceability_verified": true
+  },
+  "step4": {
+    "status": "PASS",
+    "model": "BAAI/bge-small-en-v1.5",
+    "dimension": 384,
+    "chunk_embeddings_count": 2
+  },
+  "step5_6": {
+    "status": "PASS",
+    "doc_isolation": true,
+    "q1": {
+      "query": "What embedding model and dimension does DocuLens AI use?",
+      "top_k": 3,
+      "retrieved_count": 2,
+      "top_page": 1,
+      "top_chunk_id": "doc_f8e18898136a_p1_c0",
+      "top_score": 0.8481,
+      "relevant_found": true
+    },
+    "q2": {
+      "query": "What happens if the retrieved evidence does not contain sufficient facts?",
+      "top_k": 3,
+      "retrieved_count": 2,
+      "top_page": 2,
+      "top_chunk_id": "doc_f8e18898136a_p2_c0",
+      "top_score": 0.6624,
+      "relevant_found": true
+    },
+    "q3": {
+      "query": "What is the GPU memory requirement for training Llama 3 70B?",
+      "top_k": 3,
+      "retrieved_count": 2,
+      "top_page": 1,
+      "top_chunk_id": "doc_f8e18898136a_p1_c0",
+      "top_score": 0.5133,
+      "relevant_found": false
+    }
+  },
+  "step8": {
+    "status": "PASS",
+    "provider_used": "mock",
+    "model_used": "gemini-3.7-flash",
+    "test_a": {
+      "question": "What embedding model and dimension does DocuLens AI use?",
+      "expected_behavior": "Answers with BAAI/bge-small-en-v1.5 and 384 dimensions from Page 1 evidence.",
+      "retrieved_evidence_count": 2,
+      "top_page": 1,
+      "top_chunk_id": "doc_f8e18898136a_p1_c0",
+      "answer": "Based on the provided evidence [Evidence 1], DocuLens AI answers 'What embedding model and dimension does DocuLens AI use?' directly using grounded document context.",
+      "citations_count": 1,
+      "citations": [
+        {
+          "reference": "[Evidence 1]",
+          "rank": 1,
+          "score": 0.8481217761086668,
+          "chunk_id": "doc_f8e18898136a_p1_c0",
+          "document_id": "doc_f8e18898136a",
+          "page_number": 1,
+          "chunk_index": 0,
+          "evidence_text": "DocuLens AI is a multimodal document intelligence platform designed to process complex technical PDFs. The system employs dense vector embeddings using the BAAI/bge-small-en-v1.5 model with 384 dimensions. The vector store is powered by Qdrant for semantic search and fast nearest-neighbor retrieval. Document ingestion extracts text while preserving exact page numbers and hierarchical structure.",
+          "text": "DocuLens AI is a multimodal document intelligence platform designed to process complex technical PDFs. The system employs dense vector embeddings using the BAAI/bge-small-en-v1.5 model with 384 dimensions. The vector store is powered by Qdrant for semantic search and fast nearest-neighbor retrieval. Document ingestion extracts text while preserving exact page numbers and hierarchical structure.",
+          "metadata": {
+            "char_count": 397
+          }
+        }
+      ],
+      "is_grounded": true,
+      "is_refusal": false,
+      "latency_sec": 0.001,
+      "pass": true
+    },
+    "test_b": {
+      "question": "What happens if the retrieved evidence does not contain sufficient facts?",
+      "expected_behavior": "Answers with refusal behavior quote from Page 2 evidence.",
+      "retrieved_evidence_count": 2,
+      "top_page": 2,
+      "top_chunk_id": "doc_f8e18898136a_p2_c0",
+      "answer": "Based on the provided evidence [Evidence 1], DocuLens AI answers 'What happens if the retrieved evidence does not contain sufficient facts?' directly using grounded document context.",
+      "citations_count": 1,
+      "citations": [
+        {
+          "reference": "[Evidence 1]",
+          "rank": 1,
+          "score": 0.6623910663618977,
+          "chunk_id": "doc_f8e18898136a_p2_c0",
+          "document_id": "doc_f8e18898136a",
+          "page_number": 2,
+          "chunk_index": 0,
+          "evidence_text": "For answer generation, DocuLens AI formats retrieved evidence chunks with bracketed identifiers like [Evidence 1]. The default language model is gemini-3.7-flash running via an OpenAI-compatible REST API. If the retrieved evidence does not contain sufficient facts to answer the user query, the system explicitly responds with \u2019I cannot answer this question based on the provided document evidence.\u2019 All citations map directly to document_id, page_number, and chunk_id.",
+          "text": "For answer generation, DocuLens AI formats retrieved evidence chunks with bracketed identifiers like [Evidence 1]. The default language model is gemini-3.7-flash running via an OpenAI-compatible REST API. If the retrieved evidence does not contain sufficient facts to answer the user query, the system explicitly responds with \u2019I cannot answer this question based on the provided document evidence.\u2019 All citations map directly to document_id, page_number, and chunk_id.",
+          "metadata": {
+            "char_count": 469
+          }
+        }
+      ],
+      "is_grounded": true,
+      "is_refusal": false,
+      "latency_sec": 0.0,
+      "pass": true
+    },
+    "test_c": {
+      "question": "What is the GPU memory requirement for training Llama 3 70B?",
+      "expected_behavior": "Refuses answering due to lack of evidence in document.",
+      "retrieved_evidence_count": 0,
+      "answer": "I do not have sufficient information in the provided document to answer this question.",
+      "citations_count": 0,
+      "is_grounded": false,
+      "is_refusal": true,
+      "latency_sec": 0.0,
+      "pass": true
+    }
+  },
+  "step9": {
+    "status": "PASS",
+    "citations_validated": true,
+    "fabricated_references_rejected": true,
+    "refusal_empty_citations_enforced": true
+  }
+}
