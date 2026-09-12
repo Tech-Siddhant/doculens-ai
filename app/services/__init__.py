@@ -1,6 +1,18 @@
 """Core business services for document processing."""
 
+from app.services.bm25 import (
+    BM25OkapiIndex,
+    BM25Retriever,
+    bm25_retriever,
+    tokenize,
+)
 from app.services.chunker import chunk_extraction_result, chunk_text
+from app.services.citation_validator import (
+    CitationBuilder,
+    CitationValidator,
+    citation_validator,
+    validate_citations,
+)
 from app.services.embedder import EmbeddingService, embedding_service
 from app.services.extractor import extract_text_and_metadata, normalize_whitespace
 from app.services.generator import (
@@ -8,6 +20,14 @@ from app.services.generator import (
     AnswerGenerator,
     build_grounding_prompt,
     generator,
+)
+from app.services.hybrid import (
+    HybridRetriever,
+    collect_and_merge_candidates,
+    fuse_rrf,
+    fuse_weighted,
+    get_candidate_key,
+    hybrid_retriever,
 )
 from app.services.llm_provider import (
     BaseLLMProvider,
@@ -17,6 +37,14 @@ from app.services.llm_provider import (
     OpenAICompatibleProvider,
     get_llm_provider,
     llm_provider,
+)
+from app.services.normalizer import (
+    min_max_scale_scores,
+    normalize_retrieval_results,
+)
+from app.services.reranker import (
+    CrossEncoderReranker,
+    reranker,
 )
 from app.services.retriever import DenseRetriever, retriever
 from app.services.storage import (
@@ -52,6 +80,18 @@ __all__ = [
     "vector_store",
     "DenseRetriever",
     "retriever",
+    "BM25OkapiIndex",
+    "BM25Retriever",
+    "bm25_retriever",
+    "tokenize",
+    "min_max_scale_scores",
+    "normalize_retrieval_results",
+    "HybridRetriever",
+    "hybrid_retriever",
+    "fuse_weighted",
+    "fuse_rrf",
+    "collect_and_merge_candidates",
+    "get_candidate_key",
     "BaseLLMProvider",
     "GoogleGeminiProvider",
     "LLMResponse",
@@ -63,8 +103,11 @@ __all__ = [
     "build_grounding_prompt",
     "AnswerGenerator",
     "generator",
+    "CitationValidator",
+    "CitationBuilder",
+    "citation_validator",
+    "validate_citations",
+    "CrossEncoderReranker",
+    "reranker",
 ]
-
-
-
 

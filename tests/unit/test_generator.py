@@ -305,7 +305,7 @@ def test_openai_compatible_provider_http_error_does_not_leak_key() -> None:
     )
 
     with patch("httpx.Client.post", side_effect=Exception("Connection refused")):
-        with pytest.raises(RuntimeError) as exc_info:
+        with pytest.raises(Exception) as exc_info:
             provider.generate("Test prompt")
 
         assert "Connection refused" in str(exc_info.value)

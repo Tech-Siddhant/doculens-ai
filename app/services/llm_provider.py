@@ -92,6 +92,31 @@ class MockLLMProvider(BaseLLMProvider):
         )
 
 
+class ProviderError(Exception):
+    """Base exception for LLM provider failures."""
+    pass
+
+
+class ProviderTimeoutError(ProviderError):
+    """Raised when LLM provider request times out."""
+    pass
+
+
+class ProviderRateLimitError(ProviderError):
+    """Raised when LLM provider rate limit is exceeded."""
+    pass
+
+
+class ProviderAuthenticationError(ProviderError):
+    """Raised when LLM provider authentication fails."""
+    pass
+
+
+class ProviderUnavailableError(ProviderError):
+    """Raised when LLM provider service is unavailable."""
+    pass
+
+
 class OpenAICompatibleProvider(BaseLLMProvider):
     """OpenAI-compatible HTTP provider supporting Google Gemini, OpenAI, Ollama, vLLM, and OpenRouter."""
 
@@ -154,14 +179,34 @@ class OpenAICompatibleProvider(BaseLLMProvider):
                 provider=self.provider_name,
                 usage=usage,
             )
+        except httpx.TimeoutException as exc:
+            raise ProviderTimeoutError(
+                f"LLM provider request timed out after {self.timeout} seconds."
+            ) from exc
         except httpx.HTTPStatusError as exc:
-            # Safe error message without leaking auth headers or keys
             status_code = exc.response.status_code
-            raise RuntimeError(
+            # Safe error message without leaking auth headers or keys
+            if status_code == 429:
+                raise ProviderRateLimitError(
+                    "LLM provider rate limit exceeded. Please retry after waiting."
+                ) from exc
+            if status_code == 401:
+                raise ProviderAuthenticationError(
+                    "LLM provider authentication failed. Please check your API key."
+                ) from exc
+            if status_code == 403:
+                raise ProviderAuthenticationError(
+                    "LLM provider access forbidden. Please verify your API key permissions."
+                ) from exc
+            if status_code >= 500:
+                raise ProviderUnavailableError(
+                    f"LLM provider service is temporarily unavailable (HTTP {status_code})."
+                ) from exc
+            raise ProviderError(
                 f"LLM provider API request failed with status code {status_code}."
             ) from exc
         except Exception as exc:
-            raise RuntimeError(
+            raise ProviderError(
                 f"LLM provider request failed: {type(exc).__name__}: {str(exc)}"
             ) from exc
 

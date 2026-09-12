@@ -1,41 +1,50 @@
-import re
-from typing import Any
+from typing import Sequence, Union
 
 from app.schemas.generation import Citation, GenerationResult
-from app.schemas.retrieval import RetrievedChunk
-from app.services.llm_provider import BaseLLMProvider, llm_provider
+from app.schemas.retrieval import EvidenceItem, RetrievedChunk, RetrievedVisualPage
+from app.services.citation_validator import (
+    INSUFFICIENT_EVIDENCE_ANSWER,
+    REFUSAL_PHRASES,
+    CitationValidator,
+    citation_validator,
+    extract_citation_indices as validator_extract_citation_indices,
+    is_refusal_response,
+)
+from app.services.llm_provider import (
+    BaseLLMProvider,
+    ProviderAuthenticationError,
+    ProviderError,
+    ProviderRateLimitError,
+    ProviderTimeoutError,
+    ProviderUnavailableError,
+    llm_provider,
+)
+
+# Evidence can be RetrievedChunk (from retrieval), EvidenceItem (from validation), or RetrievedVisualPage
+EvidenceInput = Union[RetrievedChunk, EvidenceItem, RetrievedVisualPage]
 
 DEFAULT_SYSTEM_PROMPT = (
     "You are DocuLens AI, a document question-answering assistant.\n"
     "Your task is to answer user questions using ONLY the provided evidence excerpts."
 )
 
-INSUFFICIENT_EVIDENCE_ANSWER = (
-    "I do not have sufficient information in the provided document to answer this question."
-)
 
-REFUSAL_PHRASES = (
-    INSUFFICIENT_EVIDENCE_ANSWER.lower(),
-    "insufficient information",
-    "insufficient evidence",
-    "i do not have sufficient information",
-    "does not contain sufficient information",
-    "no information provided",
-    "not mentioned in the provided",
-)
-
-
-def build_grounding_prompt(question: str, evidence: list[RetrievedChunk]) -> str:
+def build_grounding_prompt(question: str, evidence: Sequence[EvidenceInput]) -> str:
     """Constructs a structured grounding prompt strictly separating evidence from question."""
     evidence_lines: list[str] = []
     for idx, chunk in enumerate(evidence, start=1):
+        # Handle both RetrievedChunk and EvidenceItem - text may be None for visual evidence
+        chunk_text = getattr(chunk, "text", None) or ""
+        if not chunk_text and getattr(chunk, "image_url", None):
+            chunk_text = f"[Visual evidence: {getattr(chunk, 'image_url')}]"
+
         header = (
             f"[Evidence {idx}] Document: {chunk.document_id} | "
             f"Page: {chunk.page_number} | "
-            f"Chunk ID: {chunk.chunk_id} | "
+            f"Chunk ID: {getattr(chunk, 'chunk_id', 'N/A')} | "
             f"Score: {chunk.score:.4f}"
         )
-        evidence_lines.append(f"{header}\n{chunk.text.strip()}")
+        evidence_lines.append(f"{header}\n{chunk_text.strip()}")
 
     evidence_block = "\n\n".join(evidence_lines)
 
@@ -57,77 +66,32 @@ def build_grounding_prompt(question: str, evidence: list[RetrievedChunk]) -> str
     )
 
 
-def is_refusal_response(answer: str) -> bool:
-    """Detect whether generated text is an explicit refusal or indicates insufficient evidence."""
-    clean = answer.strip().lower()
-    return any(phrase in clean for phrase in REFUSAL_PHRASES)
-
-
 def extract_citation_indices(text: str) -> list[int]:
-    """Extract referenced 1-based evidence indices from text in order of appearance.
-
-    Supports formats:
-    - [Evidence 1], [evidence 2]
-    - Numeric bracket references: [1], [2]
-    """
-    pattern = re.compile(r"\[(?:Evidence\s+)?(\d+)\]", re.IGNORECASE)
-    indices: list[int] = []
-    seen: set[int] = set()
-    for match in pattern.finditer(text):
-        idx = int(match.group(1))
-        if idx not in seen:
-            seen.add(idx)
-            indices.append(idx)
-    return indices
+    """Extract referenced 1-based evidence indices from text in order of appearance."""
+    return citation_validator.extract_citation_indices(text)
 
 
-def make_citation(index: int, chunk: RetrievedChunk) -> Citation:
-    """Build a validated Citation object from a RetrievedChunk."""
-    return Citation(
-        reference=f"[Evidence {index}]",
-        rank=chunk.rank,
-        score=chunk.score,
-        chunk_id=chunk.chunk_id,
-        document_id=chunk.document_id,
-        page_number=chunk.page_number,
-        chunk_index=chunk.chunk_index,
-        evidence_text=chunk.text,
-        text=chunk.text,
-        metadata=chunk.metadata,
-    )
+def make_citation(index: int, chunk: EvidenceInput) -> Citation:
+    """Build a validated Citation object from a RetrievedChunk or EvidenceItem."""
+    return citation_validator.build_citation(index, chunk)
 
 
 def validate_and_build_citations(
-    answer: str, evidence: list[RetrievedChunk]
+    answer: str,
+    evidence: Sequence[EvidenceInput],
+    target_document_id: str | None = None,
 ) -> tuple[list[Citation], bool]:
     """Validate citations against retrieved evidence deterministically.
 
     Returns:
         tuple[list[Citation], bool]: (citations, is_grounded)
     """
-    if not evidence or is_refusal_response(answer):
-        return [], False
-
-    evidence_map = {idx: chunk for idx, chunk in enumerate(evidence, start=1)}
-    cited_indices = extract_citation_indices(answer)
-
-    if cited_indices:
-        # Filter valid references and reject out-of-range/fabricated references
-        valid_citations = [
-            make_citation(idx, evidence_map[idx])
-            for idx in cited_indices
-            if idx in evidence_map
-        ]
-        # If every citation tag was fabricated/out-of-range, answer is not grounded
-        if not valid_citations:
-            return [], False
-        return valid_citations, True
-
-    # If no explicit citation tags appeared and answer is not a refusal, map retrieved chunks
-    all_citations = [
-        make_citation(idx, chunk) for idx, chunk in enumerate(evidence, start=1)
-    ]
-    return all_citations, True
+    res = citation_validator.validate_citations(
+        answer=answer,
+        evidence=evidence,
+        target_document_id=target_document_id,
+    )
+    return res.citations, res.is_grounded
 
 
 class AnswerGenerator:
@@ -139,15 +103,15 @@ class AnswerGenerator:
     def generate_answer(
         self,
         question: str,
-        evidence: list[RetrievedChunk],
+        evidence: Sequence[EvidenceInput],
         document_id: str | None = None,
     ) -> GenerationResult:
         """Generate a grounded answer and citation metadata from evidence chunks."""
         if not isinstance(question, str) or not question.strip():
             raise ValueError("question must be a non-empty string.")
 
-        if not isinstance(evidence, list):
-            raise ValueError("evidence must be a list of RetrievedChunk objects.")
+        if not isinstance(evidence, (list, tuple)):
+            raise ValueError("evidence must be a list of RetrievedChunk or EvidenceItem objects.")
 
         clean_question = question.strip()
 
@@ -165,12 +129,27 @@ class AnswerGenerator:
             )
 
         prompt = build_grounding_prompt(clean_question, evidence)
-        llm_response = self.provider.generate(
-            prompt=prompt, system_prompt=DEFAULT_SYSTEM_PROMPT
-        )
 
-        citations, is_grounded = validate_and_build_citations(
-            llm_response.content, evidence
+        try:
+            llm_response = self.provider.generate(
+                prompt=prompt, system_prompt=DEFAULT_SYSTEM_PROMPT
+            )
+        except (
+            ProviderTimeoutError,
+            ProviderRateLimitError,
+            ProviderAuthenticationError,
+            ProviderUnavailableError,
+        ) as pe:
+            # Re-raise with more context for API layer to handle
+            raise pe
+        except ProviderError as pe:
+            # Generic provider error
+            raise pe
+
+        validation_result = citation_validator.validate_citations(
+            answer=llm_response.content,
+            evidence=evidence,
+            target_document_id=document_id,
         )
 
         return GenerationResult(
@@ -179,8 +158,8 @@ class AnswerGenerator:
             document_id=document_id,
             model=llm_response.model,
             provider=llm_response.provider,
-            citations=citations,
-            is_grounded=is_grounded,
+            citations=validation_result.citations,
+            is_grounded=validation_result.is_grounded,
             usage=llm_response.usage,
         )
 

@@ -48,6 +48,30 @@ class VisualEmbeddingService:
 
         return [[float(x) for x in emb.tolist()] for emb in raw_embeddings]
 
+    def embed_visual_query(self, query: str) -> list[float]:
+        """Embed a text query for visual search using the corresponding text model."""
+        if not hasattr(self, "_text_model") or self._text_model is None:
+            # Determine the corresponding text model for the vision model
+            if self.model_name == "Qdrant/clip-ViT-B-32-vision":
+                text_model_name = "Qdrant/clip-ViT-B-32-text"
+            else:
+                text_model_name = self.model_name.replace("-vision", "-text")
+                
+            from fastembed import TextEmbedding
+            try:
+                self._text_model = TextEmbedding(model_name=text_model_name)
+            except Exception as exc:
+                raise RuntimeError(f"Failed to load text embedding model '{text_model_name}': {exc}") from exc
+
+        try:
+            embeddings = list(self._text_model.embed([query]))
+            if not embeddings:
+                return []
+            return [float(x) for x in embeddings[0].tolist()]
+        except Exception as exc:
+            raise RuntimeError(f"Visual query embedding failed: {exc}") from exc
+
+
     def embed_rendered_pages(
         self, pages: Sequence[RenderedPage]
     ) -> list[VisualPageEmbedding]:

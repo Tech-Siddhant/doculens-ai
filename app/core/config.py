@@ -45,12 +45,36 @@ class Settings(BaseSettings):
     DEFAULT_RETRIEVAL_TOP_K: int = 5
     DEFAULT_SCORE_THRESHOLD: float | None = None
 
+    # BM25 Sparse Retrieval Settings
+    BM25_K1: float = 1.5
+    BM25_B: float = 0.75
+    BM25_EPSILON: float = 0.25
+
+    # Hybrid Retrieval Fusion Settings
+    DEFAULT_HYBRID_STRATEGY: Literal["weighted", "rrf"] = "weighted"
+    DEFAULT_WEIGHT_DENSE: float = 0.5
+    DEFAULT_WEIGHT_BM25: float = 0.3
+    DEFAULT_WEIGHT_VISUAL: float = 0.2
+    DEFAULT_RRF_K: int = 60
+
+    # Reranking Settings
+    RERANKER_MODEL_NAME: str = "Xenova/ms-marco-MiniLM-L-6-v2"
+    RERANKER_BATCH_SIZE: int = 16
+    DEFAULT_RERANK_TOP_K: int = 5
+
+    # Evidence Selection Settings
+    DEFAULT_EVIDENCE_TOP_K: int = 5
+
     # Page Rendering Settings
     RENDER_DPI: int = 150
     RENDER_FORMAT: Literal["png", "jpeg"] = "png"
     RENDER_OUTPUT_DIR: str = "data/rendered_pages"
 
     # LLM & Generation Settings
+    # Context Assembly Settings
+    DEFAULT_MAX_CONTEXT_CHARS: int = 16000
+
+
     LLM_PROVIDER: Literal["mock", "gemini", "openai"] = "mock"
     LLM_MODEL: str = "gemini-3.7-flash"
     LLM_BASE_URL: str = "https://generativelanguage.googleapis.com/v1beta/openai"

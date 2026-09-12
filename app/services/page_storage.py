@@ -45,7 +45,7 @@ def get_page_storage_dir(document_id: str, base_dir: str | None = None) -> Path:
 def get_stored_page_path(
     document_id: str,
     page_number: int,
-    fmt: str = "png",
+    fmt: str | None = None,
     base_dir: str | None = None,
 ) -> Path | None:
     """Get path to a stored rendered page image if it exists.
@@ -53,7 +53,7 @@ def get_stored_page_path(
     Args:
         document_id: Document identifier.
         page_number: 1-based page number.
-        fmt: Image format ("png" or "jpeg").
+        fmt: Optional image format ("png" or "jpeg"). If None, checks png, jpg, jpeg.
         base_dir: Optional override for base storage directory.
         
     Returns:
@@ -67,11 +67,19 @@ def get_stored_page_path(
     if page_number < 1:
         raise ValueError(f"page_number must be >= 1, got {page_number}")
     
-    ext = "jpg" if fmt == "jpeg" else fmt
     page_dir = get_page_storage_dir(document_id, base_dir)
-    page_path = page_dir / f"{document_id}_p{page_number}.{ext}"
+
+    if fmt is not None:
+        ext = "jpg" if fmt == "jpeg" else fmt
+        page_path = page_dir / f"{document_id}_p{page_number}.{ext}"
+        return page_path if page_path.is_file() else None
     
-    return page_path if page_path.is_file() else None
+    for ext in ["png", "jpg", "jpeg"]:
+        page_path = page_dir / f"{document_id}_p{page_number}.{ext}"
+        if page_path.is_file():
+            return page_path
+    
+    return None
 
 
 def get_stored_page_metadata(

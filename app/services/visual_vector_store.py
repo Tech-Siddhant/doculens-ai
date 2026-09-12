@@ -107,12 +107,15 @@ class VisualQdrantVectorStore(QdrantVectorStore):
                 for k, v in payload.items()
                 if k not in {"document_id", "page_number"}
             }
+            res_doc_id = payload.get("document_id", document_id or "")
+            res_page_num = payload.get("page_number", 1)
             results.append(
                 RetrievedVisualPage(
                     rank=rank,
                     score=float(pt.score),
-                    document_id=payload.get("document_id", document_id or ""),
-                    page_number=payload.get("page_number", 1),
+                    document_id=res_doc_id,
+                    page_number=res_page_num,
+                    image_url=f"{settings.API_V1_STR}/documents/{res_doc_id}/pages/{res_page_num}/image",
                     metadata=metadata,
                 )
             )

@@ -1,3 +1,10 @@
+from app.schemas.citation import (
+    Citation,
+    CitationValidationIssue,
+    CitationValidationResult,
+    EvidenceCitation,
+)
+from app.schemas.context import AssembledContext
 from app.schemas.document import (
     ChunkingResult,
     ChunkRequest,
@@ -12,18 +19,46 @@ from app.schemas.embedding import (
     EmbeddingResult,
     QueryEmbedding,
 )
+from app.schemas.evaluation import (
+    EvaluationThresholds,
+    ExpectedModality,
+    ExperimentResult,
+    ExperimentSummary,
+    FailureCategory,
+    GenerationEvalMetrics,
+    GoldDataset,
+    GoldDocument,
+    GoldQuery,
+    OperationalMetrics,
+    PipelineConfig,
+    QuestionCategory,
+    QueryEvaluationResult,
+    RetrievalEvalMetrics,
+)
 from app.schemas.generation import (
-    Citation,
-    EvidenceCitation,
     GenerationResult,
     QuestionRequest,
 )
 from app.schemas.health import HealthResponse
 from app.schemas.retrieval import (
+    EvidenceItem,
+    EvidenceSelectionResult,
+    FusedCandidate,
+    HybridRetrievalQuery,
+    HybridRetrievalResult,
     IndexingResult,
+    ModalityWeights,
+    RerankedCandidate,
+    RerankResult,
     RetrievalQuery,
     RetrievalResult,
     RetrievedChunk,
+    RetrievedVisualPage,
+    VisualRetrievalResult,
+)
+from app.schemas.validation import (
+    EvidenceValidationIssue,
+    EvidenceValidationResult,
 )
 from app.schemas.vector_store import VectorPointRecord, VectorStoreStats
 
@@ -31,6 +66,11 @@ __all__ = [
     "HealthResponse",
     "DocumentUploadResponse",
     "ExtractedPage",
+    "AssembledContext",
+    "EvidenceValidationIssue",
+    "EvidenceValidationResult",
+    "CitationValidationIssue",
+    "CitationValidationResult",
     "DocumentMetadata",
     "ExtractionResult",
     "DocumentChunk",
@@ -44,13 +84,33 @@ __all__ = [
     "RetrievedChunk",
     "RetrievalQuery",
     "RetrievalResult",
+    "RetrievedVisualPage",
+    "VisualRetrievalResult",
+    "ModalityWeights",
+    "FusedCandidate",
+    "HybridRetrievalQuery",
+    "HybridRetrievalResult",
+    "RerankedCandidate",
+    "RerankResult",
+    "EvidenceItem",
+    "EvidenceSelectionResult",
     "IndexingResult",
     "EvidenceCitation",
     "Citation",
     "QuestionRequest",
     "GenerationResult",
+    "QuestionCategory",
+    "ExpectedModality",
+    "FailureCategory",
+    "PipelineConfig",
+    "GoldDocument",
+    "GoldQuery",
+    "GoldDataset",
+    "RetrievalEvalMetrics",
+    "GenerationEvalMetrics",
+    "OperationalMetrics",
+    "QueryEvaluationResult",
+    "EvaluationThresholds",
+    "ExperimentSummary",
+    "ExperimentResult",
 ]
-
-
-
-

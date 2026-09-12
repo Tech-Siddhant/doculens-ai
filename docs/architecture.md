@@ -539,10 +539,18 @@ flowchart LR
 
 Initial fusion strategies:
 
-* weighted score fusion,
-* Reciprocal Rank Fusion.
+* **Weighted Linear Fusion**:
+  $$\text{fused\_score}(d) = w_{\text{dense}} \cdot s_{\text{norm, dense}}(d) + w_{\text{bm25}} \cdot s_{\text{norm, bm25}}(d) + w_{\text{visual}} \cdot s_{\text{norm, visual}}(d)$$
+  * Initial defaults: $w_{\text{dense}}=0.5, w_{\text{bm25}}=0.3, w_{\text{visual}}=0.2$ (normalized so $\sum w = 1.0$).
+* **Reciprocal Rank Fusion (RRF)**:
+  $$\text{RRF\_score}(d) = \sum_{m \in \text{sources}(d)} \frac{1}{k + \text{rank}_m(d)}$$
+  * Initial default: $k=60$ ($k \ge 1$).
 
-The first implementation should remain simple enough to benchmark and explain.
+### Rationale & Limitations
+
+- **Why Hybrid Retrieval**: Dense embeddings excel at semantic paraphrasing, BM25 captures exact technical identifiers and symbols, and Visual retrieval finds graphical/tabular page layouts. Combining them creates a comprehensive candidate pool.
+- **Score Normalization Requirement**: Raw scores operate on incompatible scales (cosine similarity $[-1, 1]$ vs unbounded positive BM25 scores). Direct addition is statistically invalid; min-max normalization or rank-based RRF must be used.
+- **Parameter Status**: Current defaults ($w=\{0.5, 0.3, 0.2\}, k=60$) represent standard baseline starting points, not empirically proven optima for all document distributions. Formal parameter sweeps and evaluation are deferred to Phase 4.6 and Phase 6.
 
 ---
 

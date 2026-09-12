@@ -1,4 +1,5 @@
 import io
+import io
 from collections.abc import Generator
 from pathlib import Path
 
@@ -68,10 +69,14 @@ def empty_page_pdf_bytes() -> bytes:
 
 
 @pytest.fixture(autouse=True)
-def setup_test_upload_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+def setup_test_storage_dirs(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     test_upload_dir = tmp_path / "uploads"
     test_upload_dir.mkdir(parents=True, exist_ok=True)
     monkeypatch.setattr(settings, "UPLOAD_DIR", str(test_upload_dir))
+
+    test_render_dir = tmp_path / "rendered_pages"
+    test_render_dir.mkdir(parents=True, exist_ok=True)
+    monkeypatch.setattr(settings, "RENDER_OUTPUT_DIR", str(test_render_dir))
     return test_upload_dir
 
 
