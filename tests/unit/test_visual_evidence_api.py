@@ -210,3 +210,27 @@ def test_retrieve_visual_service_failure(client: TestClient, monkeypatch) -> Non
     )
     assert response.status_code == 500
     assert "visual retrieval failed" in response.json()["detail"].lower()
+
+
+def test_get_page_image_on_demand_rendering(client: TestClient, monkeypatch) -> None:
+    """Verify page image renders on demand if PDF exists but page image is not yet cached."""
+    doc_id = "doc_aabbccddeeff"
+    # Mock get_document_path to return a valid dummy path
+    from app.schemas.document import RenderedPage
+    dummy_img = Path(settings.RENDER_OUTPUT_DIR) / doc_id / f"{doc_id}_p1.png"
+    _create_test_image(dummy_img, width=100, height=100, fmt="PNG")
+
+    monkeypatch.setattr(
+        "app.api.routes.documents.get_document_path",
+        lambda did: dummy_img if did == doc_id else None,
+    )
+    monkeypatch.setattr(
+        "app.services.renderer.render_page",
+        lambda did, fpath, pnum: RenderedPage(
+            document_id=did, page_number=pnum, image_path=str(dummy_img), width=100, height=100, format="png", size_bytes=100
+        ),
+    )
+
+    response = client.get(f"{settings.API_V1_STR}/documents/{doc_id}/pages/1/image")
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "image/png"

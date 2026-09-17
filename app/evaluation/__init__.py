@@ -1,5 +1,15 @@
 """Evaluation module for DocuLens AI."""
 
+from app.evaluation.harness import (
+    BASELINE_NAMES,
+    EvaluationStores,
+    create_isolated_stores,
+    get_retrieval_function_for_baseline,
+    get_shared_stores,
+    index_evaluation_document,
+    run_all_baselines,
+    run_baseline_evaluation,
+)
 from app.evaluation.judges import (
     BaseGenerationJudge,
     DeterministicGenerationJudge,
@@ -22,6 +32,10 @@ from app.evaluation.metrics import (
     extract_candidate_info,
     extract_evidence_text,
     is_candidate_relevant,
+)
+from app.evaluation.regression import (
+    RegressionThresholds,
+    compare_against_baseline,
 )
 from app.evaluation.runner import (
     GenerationEvaluator,
@@ -67,4 +81,16 @@ __all__ = [
     "retrieval_evaluator",
     "generation_evaluator",
     "rag_evaluator",
+    # Regression
+    "RegressionThresholds",
+    "compare_against_baseline",
+    # Harness & Baselines
+    "BASELINE_NAMES",
+    "EvaluationStores",
+    "get_shared_stores",
+    "create_isolated_stores",
+    "index_evaluation_document",
+    "get_retrieval_function_for_baseline",
+    "run_baseline_evaluation",
+    "run_all_baselines",
 ]

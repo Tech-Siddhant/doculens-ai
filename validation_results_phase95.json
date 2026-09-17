@@ -1,0 +1,473 @@
+{
+  "health_body": {
+    "status": "healthy",
+    "version": "0.1.0"
+  },
+  "health_ms": 7.875022000007448,
+  "ready_body": {
+    "status": "healthy",
+    "version": "0.1.0",
+    "components": {
+      "storage": {
+        "status": "healthy",
+        "details": "Upload directory is writable"
+      },
+      "vector_store": {
+        "status": "healthy",
+        "details": "Collection 'document_chunks' ready (0 chunks)"
+      },
+      "visual_vector_store": {
+        "status": "healthy",
+        "details": "Collection 'visual_pages' ready (0 pages)"
+      },
+      "llm_provider": {
+        "status": "healthy",
+        "details": "Mock provider active"
+      }
+    }
+  },
+  "ready_ms": 6.8406380005399114,
+  "upload_ms": 8.739468999920064,
+  "doc_id": "doc_b8c3b8fb26a0",
+  "upload_req_id": "val-req-001",
+  "index_ms": 1165.8996019996266,
+  "index_body": {
+    "document_id": "doc_b8c3b8fb26a0",
+    "total_pages": 2,
+    "total_chunks": 2,
+    "total_embeddings": 2,
+    "status": "indexed"
+  },
+  "ask_total_ms": 1954.9214349999602,
+  "ask_body": {
+    "question": "What was the operating budget in fiscal year 2025?",
+    "answer": "Based on the provided evidence [Evidence 1], DocuLens AI answers 'What was the operating budget in fiscal year 2025?' directly using grounded document context.",
+    "document_id": "doc_b8c3b8fb26a0",
+    "model": "gemini-3.7-flash",
+    "provider": "mock",
+    "citations": [
+      {
+        "reference": "[Evidence 1]",
+        "rank": 1,
+        "score": 8.8434419631958,
+        "chunk_id": "doc_b8c3b8fb26a0_p1_c0",
+        "document_id": "doc_b8c3b8fb26a0",
+        "page_number": 1,
+        "chunk_index": 0,
+        "evidence_text": "DocuLens AI Architecture and Reliability Report\nDocuLens AI delivers multimodal document intelligence using hybrid BM25 and dense retrieval.\nThe fiscal year 2025 operating budget was exactly 42.5 million dollars.",
+        "text": "DocuLens AI Architecture and Reliability Report\nDocuLens AI delivers multimodal document intelligence using hybrid BM25 and dense retrieval.\nThe fiscal year 2025 operating budget was exactly 42.5 million dollars.",
+        "image_url": null,
+        "retrieval_type": "evidence",
+        "sources": [
+          "dense",
+          "bm25"
+        ],
+        "metadata": {
+          "char_count": 212
+        }
+      }
+    ],
+    "is_grounded": true,
+    "usage": {
+      "prompt_tokens": 20,
+      "completion_tokens": 20,
+      "total_tokens": 40
+    },
+    "pipeline_trace": {
+      "pipeline_id": "trace_33c17e16",
+      "stages": [
+        {
+          "stage_id": "question_understanding",
+          "stage_name": "Question understanding",
+          "order": 1,
+          "status": "success",
+          "duration_ms": 0.0024720002329559065,
+          "input_count": 50,
+          "output_count": 50,
+          "error_category": null,
+          "description": "Query parsed (50 chars)",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "error_message": null,
+          "details": {
+            "Query length": "50 chars",
+            "Target document": "doc_b8c3b8fb26a0"
+          }
+        },
+        {
+          "stage_id": "hybrid_retrieval",
+          "stage_name": "Hybrid retrieval",
+          "order": 2,
+          "status": "success",
+          "duration_ms": 1477.7694009999323,
+          "input_count": 1,
+          "output_count": 2,
+          "error_category": null,
+          "description": "Retrieved 2 candidates across channels",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "error_message": null,
+          "details": {
+            "Dense candidates": 2,
+            "Keyword candidates": 1,
+            "Visual candidates": 0,
+            "Total retrieved": 2,
+            "Fusion strategy": "weighted"
+          }
+        },
+        {
+          "stage_id": "reranking",
+          "stage_name": "Reranking",
+          "order": 3,
+          "status": "success",
+          "duration_ms": 428.4851649999837,
+          "input_count": 2,
+          "output_count": 2,
+          "error_category": null,
+          "description": "Cross-encoder scored 2 candidates",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "error_message": null,
+          "details": {
+            "Model": "Xenova/ms-marco-MiniLM-L-6-v2",
+            "Candidates before": 2,
+            "Candidates after": 2,
+            "Selection threshold": "None"
+          }
+        },
+        {
+          "stage_id": "evidence_selection",
+          "stage_name": "Evidence selection",
+          "order": 4,
+          "status": "success",
+          "duration_ms": 2.0484000006035785,
+          "input_count": 2,
+          "output_count": 2,
+          "error_category": null,
+          "description": "Selected 2 evidence items (top-k=5)",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "error_message": null,
+          "details": {
+            "Candidates input": 2,
+            "Selected count": 2,
+            "Top-k target": 5,
+            "Deduplicated": 0,
+            "Threshold applied": "None"
+          }
+        },
+        {
+          "stage_id": "evidence_validation",
+          "stage_name": "Evidence validation",
+          "order": 5,
+          "status": "success",
+          "duration_ms": 0.006332000339170918,
+          "input_count": 2,
+          "output_count": 2,
+          "error_category": null,
+          "description": "Validated 2 of 2 evidence items",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "error_message": null,
+          "details": {
+            "Input evidence": 2,
+            "Valid items": 2,
+            "Rejected items": 0,
+            "Validation status": "Passed"
+          }
+        },
+        {
+          "stage_id": "context_assembly",
+          "stage_name": "Context assembly",
+          "order": 6,
+          "status": "success",
+          "duration_ms": 2.412523000202782,
+          "input_count": 2,
+          "output_count": 547,
+          "error_category": null,
+          "description": "Assembled context (547 chars, 2 pages)",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "error_message": null,
+          "details": {
+            "Evidence count": 2,
+            "Context size": "547 chars",
+            "Source pages": "2 page(s)",
+            "Truncated": "No"
+          }
+        },
+        {
+          "stage_id": "answer_generation",
+          "stage_name": "Answer generation",
+          "order": 7,
+          "status": "success",
+          "duration_ms": 7.61930999942706,
+          "input_count": 2,
+          "output_count": 159,
+          "error_category": null,
+          "description": "Answer generated using gemini-3.7-flash",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "error_message": null,
+          "details": {
+            "Provider": "mock",
+            "Model": "gemini-3.7-flash",
+            "Generation latency": "8 ms",
+            "Prompt tokens": 20,
+            "Completion tokens": 20,
+            "Total tokens": 40
+          }
+        },
+        {
+          "stage_id": "citation_validation",
+          "stage_name": "Citation validation",
+          "order": 8,
+          "status": "success",
+          "duration_ms": 0.07547600034740753,
+          "input_count": 1,
+          "output_count": 1,
+          "error_category": null,
+          "description": "1 valid, 0 rejected",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "error_message": null,
+          "details": {
+            "Citations checked": 1,
+            "Valid citations": 1,
+            "Invalid citations": 0,
+            "Fallback status": "None (Strict)"
+          }
+        }
+      ],
+      "summary": {
+        "total_duration_ms": 1931.5301169999657,
+        "retrieval_duration_ms": 1477.7694009999323,
+        "reranking_duration_ms": 428.4851649999837,
+        "generation_duration_ms": 7.61930999942706,
+        "citation_validation_duration_ms": 0.07547600034740753,
+        "total_stages": 8,
+        "successful_stages": 8,
+        "failed_stages": 0,
+        "fallback_stages": 0
+      }
+    }
+  },
+  "ask_req_id": "val-ask-001",
+  "refuse_ms": 85.95831799993903,
+  "refuse_body": {
+    "question": "What is the atmospheric composition of Neptune in 1600?",
+    "answer": "Based on the provided evidence [Evidence 1], DocuLens AI answers 'What is the atmospheric composition of Neptune in 1600?' directly using grounded document context.",
+    "document_id": "doc_b8c3b8fb26a0",
+    "model": "gemini-3.7-flash",
+    "provider": "mock",
+    "citations": [
+      {
+        "reference": "[Evidence 1]",
+        "rank": 1,
+        "score": -11.37755012512207,
+        "chunk_id": "doc_b8c3b8fb26a0_p1_c0",
+        "document_id": "doc_b8c3b8fb26a0",
+        "page_number": 1,
+        "chunk_index": 0,
+        "evidence_text": "DocuLens AI Architecture and Reliability Report\nDocuLens AI delivers multimodal document intelligence using hybrid BM25 and dense retrieval.\nThe fiscal year 2025 operating budget was exactly 42.5 million dollars.",
+        "text": "DocuLens AI Architecture and Reliability Report\nDocuLens AI delivers multimodal document intelligence using hybrid BM25 and dense retrieval.\nThe fiscal year 2025 operating budget was exactly 42.5 million dollars.",
+        "image_url": null,
+        "retrieval_type": "evidence",
+        "sources": [
+          "dense",
+          "bm25"
+        ],
+        "metadata": {
+          "char_count": 212
+        }
+      }
+    ],
+    "is_grounded": true,
+    "usage": {
+      "prompt_tokens": 20,
+      "completion_tokens": 20,
+      "total_tokens": 40
+    },
+    "pipeline_trace": {
+      "pipeline_id": "trace_077c42f2",
+      "stages": [
+        {
+          "stage_id": "question_understanding",
+          "stage_name": "Question understanding",
+          "order": 1,
+          "status": "success",
+          "duration_ms": 0.0004579997039400041,
+          "input_count": 55,
+          "output_count": 55,
+          "error_category": null,
+          "description": "Query parsed (55 chars)",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "error_message": null,
+          "details": {
+            "Query length": "55 chars",
+            "Target document": "doc_b8c3b8fb26a0"
+          }
+        },
+        {
+          "stage_id": "hybrid_retrieval",
+          "stage_name": "Hybrid retrieval",
+          "order": 2,
+          "status": "success",
+          "duration_ms": 53.97057600021071,
+          "input_count": 1,
+          "output_count": 2,
+          "error_category": null,
+          "description": "Retrieved 2 candidates across channels",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "error_message": null,
+          "details": {
+            "Dense candidates": 2,
+            "Keyword candidates": 1,
+            "Visual candidates": 0,
+            "Total retrieved": 2,
+            "Fusion strategy": "weighted"
+          }
+        },
+        {
+          "stage_id": "reranking",
+          "stage_name": "Reranking",
+          "order": 3,
+          "status": "success",
+          "duration_ms": 26.98006999980862,
+          "input_count": 2,
+          "output_count": 2,
+          "error_category": null,
+          "description": "Cross-encoder scored 2 candidates",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "error_message": null,
+          "details": {
+            "Model": "Xenova/ms-marco-MiniLM-L-6-v2",
+            "Candidates before": 2,
+            "Candidates after": 2,
+            "Selection threshold": "None"
+          }
+        },
+        {
+          "stage_id": "evidence_selection",
+          "stage_name": "Evidence selection",
+          "order": 4,
+          "status": "success",
+          "duration_ms": 0.07781099975545658,
+          "input_count": 2,
+          "output_count": 2,
+          "error_category": null,
+          "description": "Selected 2 evidence items (top-k=5)",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "error_message": null,
+          "details": {
+            "Candidates input": 2,
+            "Selected count": 2,
+            "Top-k target": 5,
+            "Deduplicated": 0,
+            "Threshold applied": "None"
+          }
+        },
+        {
+          "stage_id": "evidence_validation",
+          "stage_name": "Evidence validation",
+          "order": 5,
+          "status": "success",
+          "duration_ms": 0.005898999916098546,
+          "input_count": 2,
+          "output_count": 2,
+          "error_category": null,
+          "description": "Validated 2 of 2 evidence items",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "error_message": null,
+          "details": {
+            "Input evidence": 2,
+            "Valid items": 2,
+            "Rejected items": 0,
+            "Validation status": "Passed"
+          }
+        },
+        {
+          "stage_id": "context_assembly",
+          "stage_name": "Context assembly",
+          "order": 6,
+          "status": "success",
+          "duration_ms": 0.0272190000032424,
+          "input_count": 2,
+          "output_count": 547,
+          "error_category": null,
+          "description": "Assembled context (547 chars, 2 pages)",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "error_message": null,
+          "details": {
+            "Evidence count": 2,
+            "Context size": "547 chars",
+            "Source pages": "2 page(s)",
+            "Truncated": "No"
+          }
+        },
+        {
+          "stage_id": "answer_generation",
+          "stage_name": "Answer generation",
+          "order": 7,
+          "status": "success",
+          "duration_ms": 0.1958209995791549,
+          "input_count": 2,
+          "output_count": 164,
+          "error_category": null,
+          "description": "Answer generated using gemini-3.7-flash",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "error_message": null,
+          "details": {
+            "Provider": "mock",
+            "Model": "gemini-3.7-flash",
+            "Generation latency": "0 ms",
+            "Prompt tokens": 20,
+            "Completion tokens": 20,
+            "Total tokens": 40
+          }
+        },
+        {
+          "stage_id": "citation_validation",
+          "stage_name": "Citation validation",
+          "order": 8,
+          "status": "success",
+          "duration_ms": 0.08716699994693045,
+          "input_count": 1,
+          "output_count": 1,
+          "error_category": null,
+          "description": "1 valid, 0 rejected",
+          "fallback_used": false,
+          "fallback_reason": null,
+          "error_message": null,
+          "details": {
+            "Citations checked": 1,
+            "Valid citations": 1,
+            "Invalid citations": 0,
+            "Fallback status": "None (Strict)"
+          }
+        }
+      ],
+      "summary": {
+        "total_duration_ms": 82.77814200027933,
+        "retrieval_duration_ms": 53.97057600021071,
+        "reranking_duration_ms": 26.98006999980862,
+        "generation_duration_ms": 0.1958209995791549,
+        "citation_validation_duration_ms": 0.08716699994693045,
+        "total_stages": 8,
+        "successful_stages": 8,
+        "failed_stages": 0,
+        "fallback_stages": 0
+      }
+    }
+  },
+  "corrupt_upload_status": 400,
+  "missing_doc_status": 404,
+  "frontend_status": 200
+}

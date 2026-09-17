@@ -1,5 +1,6 @@
 """Hybrid multi-modal retrieval fusion service for DocuLens AI."""
 
+import logging
 from collections.abc import Sequence
 from typing import Any, Literal
 
@@ -16,6 +17,8 @@ from app.services.normalizer import normalize_retrieval_results
 from app.services.retriever import DenseRetriever, retriever
 from app.services.visual_embedder import VisualEmbeddingService, visual_embedding_service
 from app.services.visual_vector_store import VisualQdrantVectorStore, visual_vector_store
+
+logger = logging.getLogger(__name__)
 
 
 def get_candidate_key(item: RetrievedChunk | RetrievedVisualPage | dict[str, Any]) -> str:
@@ -272,20 +275,34 @@ class HybridRetriever:
         # 1. Execute Dense Retrieval (if enabled)
         dense_raw: list[RetrievedChunk] = []
         if include_dense:
-            dense_raw = self.dense_retriever.retrieve(
-                query=query,
-                top_k=target_top_k,
-                document_id=document_id,
-            ).results
+            try:
+                dense_raw = self.dense_retriever.retrieve(
+                    query=query,
+                    top_k=target_top_k,
+                    document_id=document_id,
+                ).results
+            except Exception as exc:
+                logger.warning(
+                    f"Dense retrieval failed: {exc}. Falling back to remaining channels.",
+                    extra={"query": query, "document_id": document_id, "error": str(exc)},
+                )
+                dense_raw = []
 
         # 2. Execute BM25 Retrieval (if enabled)
         bm25_raw: list[RetrievedChunk] = []
         if include_bm25:
-            bm25_raw = self.bm25_retriever.retrieve(
-                query=query,
-                top_k=target_top_k,
-                document_id=document_id,
-            ).results
+            try:
+                bm25_raw = self.bm25_retriever.retrieve(
+                    query=query,
+                    top_k=target_top_k,
+                    document_id=document_id,
+                ).results
+            except Exception as exc:
+                logger.warning(
+                    f"BM25 retrieval failed: {exc}. Falling back to remaining channels.",
+                    extra={"query": query, "document_id": document_id, "error": str(exc)},
+                )
+                bm25_raw = []
 
         # 3. Execute Visual Retrieval (if enabled and available)
         visual_raw: list[RetrievedVisualPage] = []
@@ -298,9 +315,12 @@ class HybridRetriever:
                         top_k=target_top_k,
                         document_id=document_id,
                     )
-            except Exception:
-                # If visual embedding/search fails due to missing visual index, visual_raw remains []
-                pass
+            except Exception as exc:
+                logger.warning(
+                    f"Visual retrieval failed: {exc}. Falling back to remaining channels.",
+                    extra={"query": query, "document_id": document_id, "error": str(exc)},
+                )
+                visual_raw = []
 
         # 4. Normalize Scores per Modality
         dense_norm = normalize_retrieval_results(dense_raw)

@@ -42,6 +42,10 @@ from app.services.normalizer import (
     min_max_scale_scores,
     normalize_retrieval_results,
 )
+from app.services.orchestrator import (
+    AnswerOrchestrator,
+    orchestrator,
+)
 from app.services.reranker import (
     CrossEncoderReranker,
     reranker,
@@ -109,5 +113,7 @@ __all__ = [
     "validate_citations",
     "CrossEncoderReranker",
     "reranker",
+    "AnswerOrchestrator",
+    "orchestrator",
 ]
 

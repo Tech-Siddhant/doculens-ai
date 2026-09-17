@@ -1,4 +1,6 @@
+import logging
 import re
+import time
 from abc import ABC, abstractmethod
 from typing import Any
 
@@ -6,6 +8,8 @@ import httpx
 from pydantic import BaseModel, Field
 
 from app.core.config import Settings, settings
+
+logger = logging.getLogger(__name__)
 
 
 class LLMResponse(BaseModel):
@@ -128,6 +132,7 @@ class OpenAICompatibleProvider(BaseLLMProvider):
         temperature: float = 0.0,
         max_tokens: int = 1000,
         timeout: float = 30.0,
+        max_retries: int = 2,
         provider_name: str = "gemini",
     ) -> None:
         self.api_key = api_key
@@ -136,6 +141,7 @@ class OpenAICompatibleProvider(BaseLLMProvider):
         self.temperature = temperature
         self.max_tokens = max_tokens
         self.timeout = timeout
+        self.max_retries = max(0, max_retries)
         self.provider_name = provider_name
 
     def generate(
@@ -162,53 +168,106 @@ class OpenAICompatibleProvider(BaseLLMProvider):
 
         url = f"{self.base_url}/chat/completions"
 
-        try:
-            with httpx.Client(timeout=self.timeout) as client:
-                response = client.post(url, headers=headers, json=payload)
-                response.raise_for_status()
-                data = response.json()
+        last_exception: Exception | None = None
+        for attempt in range(self.max_retries + 1):
+            try:
+                with httpx.Client(timeout=self.timeout) as client:
+                    response = client.post(url, headers=headers, json=payload)
+                    response.raise_for_status()
+                    try:
+                        data = response.json()
+                    except Exception as exc:
+                        raise ProviderError(
+                            f"Malformed response from LLM provider: Invalid JSON: {str(exc)}"
+                        ) from exc
 
-            choice = data["choices"][0]
-            content = choice["message"]["content"]
-            model_used = data.get("model", self.model)
-            usage = data.get("usage", {})
+                if (
+                    not isinstance(data, dict)
+                    or "choices" not in data
+                    or not isinstance(data["choices"], list)
+                    or len(data["choices"]) == 0
+                ):
+                    raise ProviderError(
+                        "Malformed LLM provider response: missing or empty choices."
+                    )
 
-            return LLMResponse(
-                content=content,
-                model=model_used,
-                provider=self.provider_name,
-                usage=usage,
-            )
-        except httpx.TimeoutException as exc:
-            raise ProviderTimeoutError(
-                f"LLM provider request timed out after {self.timeout} seconds."
-            ) from exc
-        except httpx.HTTPStatusError as exc:
-            status_code = exc.response.status_code
-            # Safe error message without leaking auth headers or keys
-            if status_code == 429:
-                raise ProviderRateLimitError(
-                    "LLM provider rate limit exceeded. Please retry after waiting."
+                choice = data["choices"][0]
+                if not isinstance(choice, dict) or "message" not in choice:
+                    raise ProviderError("Malformed LLM provider response: missing message in choice.")
+
+                message_obj = choice.get("message") or {}
+                content = message_obj.get("content")
+                if content is None:
+                    raise ProviderError("Malformed LLM provider response: missing content in message.")
+
+                model_used = data.get("model", self.model)
+                usage_raw = data.get("usage") or {}
+                usage = {
+                    "prompt_tokens": usage_raw.get("prompt_tokens", 0),
+                    "completion_tokens": usage_raw.get("completion_tokens", 0),
+                    "total_tokens": usage_raw.get("total_tokens", 0),
+                }
+
+                return LLMResponse(
+                    content=str(content),
+                    model=model_used,
+                    provider=self.provider_name,
+                    usage=usage,
+                )
+            except httpx.TimeoutException as exc:
+                from app.core.metrics import metrics_collector
+                metrics_collector.record_provider_timeout()
+                last_exception = ProviderTimeoutError(
+                    f"LLM provider request timed out after {self.timeout} seconds."
+                )
+                if attempt < self.max_retries:
+                    time.sleep(min(0.5 * (2**attempt), 2.0))
+                    continue
+                raise last_exception from exc
+            except httpx.HTTPStatusError as exc:
+                status_code = exc.response.status_code
+                if status_code in (429, 500, 502, 503, 504) and attempt < self.max_retries:
+                    logger.warning(
+                        f"LLM provider returned HTTP {status_code}, retrying attempt {attempt + 1}/{self.max_retries}..."
+                    )
+                    time.sleep(min(0.5 * (2**attempt), 2.0))
+                    continue
+
+                if status_code == 429:
+                    from app.core.metrics import metrics_collector
+                    metrics_collector.record_provider_rate_limit()
+                    raise ProviderRateLimitError(
+                        "LLM provider rate limit exceeded. Please retry after waiting."
+                    ) from exc
+                if status_code in (401, 403):
+                    raise ProviderAuthenticationError(
+                        "LLM provider authentication failed. Please check your API key."
+                    ) from exc
+                if status_code >= 500:
+                    raise ProviderUnavailableError(
+                        f"LLM provider service is temporarily unavailable (HTTP {status_code})."
+                    ) from exc
+                raise ProviderError(
+                    f"LLM provider API request failed with status code {status_code}."
                 ) from exc
-            if status_code == 401:
-                raise ProviderAuthenticationError(
-                    "LLM provider authentication failed. Please check your API key."
+            except (httpx.ConnectError, httpx.NetworkError) as exc:
+                last_exception = ProviderUnavailableError(
+                    f"LLM provider connection failed: {type(exc).__name__}: {str(exc)}"
+                )
+                if attempt < self.max_retries:
+                    time.sleep(min(0.5 * (2**attempt), 2.0))
+                    continue
+                raise last_exception from exc
+            except (ProviderError, ProviderTimeoutError, ProviderRateLimitError, ProviderAuthenticationError, ProviderUnavailableError):
+                raise
+            except Exception as exc:
+                raise ProviderError(
+                    f"LLM provider request failed: {type(exc).__name__}: {str(exc)}"
                 ) from exc
-            if status_code == 403:
-                raise ProviderAuthenticationError(
-                    "LLM provider access forbidden. Please verify your API key permissions."
-                ) from exc
-            if status_code >= 500:
-                raise ProviderUnavailableError(
-                    f"LLM provider service is temporarily unavailable (HTTP {status_code})."
-                ) from exc
-            raise ProviderError(
-                f"LLM provider API request failed with status code {status_code}."
-            ) from exc
-        except Exception as exc:
-            raise ProviderError(
-                f"LLM provider request failed: {type(exc).__name__}: {str(exc)}"
-            ) from exc
+
+        if last_exception:
+            raise last_exception
+        raise ProviderError("LLM provider request failed with unknown error.")
 
 
 # Alias for explicit Google Gemini provider usage
@@ -220,23 +279,28 @@ def get_llm_provider(settings_obj: Settings | None = None) -> BaseLLMProvider:
     cfg = settings_obj or settings
 
     if cfg.LLM_PROVIDER == "gemini":
-        api_key = cfg.GEMINI_API_KEY or cfg.LLM_API_KEY
+        api_key = (cfg.GEMINI_API_KEY or cfg.LLM_API_KEY).get_secret_value()
         return OpenAICompatibleProvider(
             api_key=api_key,
             base_url=cfg.GEMINI_BASE_URL,
             model=cfg.LLM_MODEL,
             temperature=cfg.LLM_TEMPERATURE,
             max_tokens=cfg.LLM_MAX_TOKENS,
+            timeout=cfg.LLM_TIMEOUT,
+            max_retries=cfg.LLM_MAX_RETRIES,
             provider_name="gemini",
         )
 
     if cfg.LLM_PROVIDER == "openai":
+        api_key = cfg.LLM_API_KEY.get_secret_value() if cfg.LLM_API_KEY else None
         return OpenAICompatibleProvider(
-            api_key=cfg.LLM_API_KEY,
+            api_key=api_key,
             base_url=cfg.LLM_BASE_URL,
             model=cfg.LLM_MODEL,
             temperature=cfg.LLM_TEMPERATURE,
             max_tokens=cfg.LLM_MAX_TOKENS,
+            timeout=cfg.LLM_TIMEOUT,
+            max_retries=cfg.LLM_MAX_RETRIES,
             provider_name="openai",
         )
 

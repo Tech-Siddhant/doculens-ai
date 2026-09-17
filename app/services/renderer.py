@@ -85,6 +85,8 @@ def render_page(
     try:
         doc = pymupdf.Document(str(file_path))
     except Exception as err:
+        from app.core.metrics import metrics_collector
+        metrics_collector.record_rendering_failure()
         raise RenderingError(f"Failed to open PDF: {err}") from err
 
     try:
@@ -150,6 +152,8 @@ def render_document(
     try:
         doc = pymupdf.Document(str(file_path))
     except Exception as err:
+        from app.core.metrics import metrics_collector
+        metrics_collector.record_rendering_failure()
         raise RenderingError(f"Failed to open PDF: {err}") from err
 
     try:

@@ -345,3 +345,50 @@ def test_ask_collection_endpoint(
     data = res.json()
     assert data["is_grounded"] is True
     assert len(data["citations"]) > 0
+
+
+def test_list_documents_endpoint(
+    client: TestClient, valid_pdf_bytes: bytes, multi_page_pdf_bytes: bytes
+) -> None:
+    # 1. Initial list check (should be empty or contains existing)
+    initial_res = client.get(f"{settings.API_V1_STR}/documents")
+    assert initial_res.status_code == 200
+    assert isinstance(initial_res.json(), list)
+
+    # 2. Upload two distinct documents
+    up1 = client.post(
+        f"{settings.API_V1_STR}/documents/upload",
+        files={"file": ("sample1.pdf", valid_pdf_bytes, "application/pdf")},
+    )
+    doc_id_1 = up1.json()["document_id"]
+
+    up2 = client.post(
+        f"{settings.API_V1_STR}/documents/upload",
+        files={"file": ("arch2.pdf", multi_page_pdf_bytes, "application/pdf")},
+    )
+    doc_id_2 = up2.json()["document_id"]
+
+    # 3. List documents and verify both are returned with proper metadata
+    list_res = client.get(f"{settings.API_V1_STR}/documents")
+    assert list_res.status_code == 200
+    docs = list_res.json()
+    doc_ids = [d["document_id"] for d in docs]
+    assert doc_id_1 in doc_ids
+    assert doc_id_2 in doc_ids
+
+    # 4. Get single document endpoint
+    doc1_res = client.get(f"{settings.API_V1_STR}/documents/{doc_id_1}")
+    assert doc1_res.status_code == 200
+    doc1_data = doc1_res.json()
+    assert doc1_data["document_id"] == doc_id_1
+    assert doc1_data["status"] in ["ready", "uploaded"]
+    assert doc1_data["size_bytes"] == len(valid_pdf_bytes)
+
+    # 5. Non-existent document returns 404
+    missing_res = client.get(f"{settings.API_V1_STR}/documents/doc_000000000000")
+    assert missing_res.status_code == 404
+
+    # 6. Invalid document id returns 400
+    invalid_res = client.get(f"{settings.API_V1_STR}/documents/invalid_doc_id")
+    assert invalid_res.status_code == 400
+

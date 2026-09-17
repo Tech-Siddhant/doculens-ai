@@ -10,6 +10,7 @@ from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
 
 from app.api.main import create_app
 from app.core.config import settings
+from app.core.ratelimit import clear_rate_limits
 
 
 def generate_pdf_bytes(pages_text: list[str], metadata: dict | None = None) -> bytes:
@@ -78,6 +79,14 @@ def setup_test_storage_dirs(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> 
     test_render_dir.mkdir(parents=True, exist_ok=True)
     monkeypatch.setattr(settings, "RENDER_OUTPUT_DIR", str(test_render_dir))
     return test_upload_dir
+
+
+@pytest.fixture(autouse=True)
+def clear_rate_limits_between_tests() -> None:
+    """Ensure the in-process rate limiter never leaks state across tests."""
+    clear_rate_limits()
+    yield
+    clear_rate_limits()
 
 
 @pytest.fixture

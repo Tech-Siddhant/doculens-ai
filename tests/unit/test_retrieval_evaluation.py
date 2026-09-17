@@ -464,7 +464,8 @@ def test_evaluator_with_real_seed_dataset():
     from pathlib import Path
     from app.services.dataset import load_gold_dataset
 
-    seed_path = Path("data/gold_dataset.jsonl")
+    root = Path(__file__).resolve().parent.parent.parent
+    seed_path = root / "data/gold_dataset.jsonl"
     if not seed_path.exists():
         pytest.skip("data/gold_dataset.jsonl not found")
 

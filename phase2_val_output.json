@@ -10,12 +10,14 @@
     }
   },
   "step2": {
-    "status": "BLOCKED",
-    "reason": "GEMINI_API_KEY environment variable not set in this environment"
+    "status": "PASS",
+    "latency": 1.31,
+    "model": "gemini-3.7-flash",
+    "response": "OK"
   },
   "step3": {
     "status": "PASS",
-    "doc_id": "doc_f8e18898136a",
+    "doc_id": "doc_da07a9e7e59e",
     "page_count": 2,
     "chunks_created": 2,
     "traceability_verified": true
@@ -34,7 +36,7 @@
       "top_k": 3,
       "retrieved_count": 2,
       "top_page": 1,
-      "top_chunk_id": "doc_f8e18898136a_p1_c0",
+      "top_chunk_id": "doc_da07a9e7e59e_p1_c0",
       "top_score": 0.8481,
       "relevant_found": true
     },
@@ -43,7 +45,7 @@
       "top_k": 3,
       "retrieved_count": 2,
       "top_page": 2,
-      "top_chunk_id": "doc_f8e18898136a_p2_c0",
+      "top_chunk_id": "doc_da07a9e7e59e_p2_c0",
       "top_score": 0.6624,
       "relevant_found": true
     },
@@ -52,34 +54,37 @@
       "top_k": 3,
       "retrieved_count": 2,
       "top_page": 1,
-      "top_chunk_id": "doc_f8e18898136a_p1_c0",
+      "top_chunk_id": "doc_da07a9e7e59e_p1_c0",
       "top_score": 0.5133,
       "relevant_found": false
     }
   },
   "step8": {
     "status": "PASS",
-    "provider_used": "mock",
+    "provider_used": "gemini",
     "model_used": "gemini-3.7-flash",
     "test_a": {
       "question": "What embedding model and dimension does DocuLens AI use?",
       "expected_behavior": "Answers with BAAI/bge-small-en-v1.5 and 384 dimensions from Page 1 evidence.",
       "retrieved_evidence_count": 2,
       "top_page": 1,
-      "top_chunk_id": "doc_f8e18898136a_p1_c0",
-      "answer": "Based on the provided evidence [Evidence 1], DocuLens AI answers 'What embedding model and dimension does DocuLens AI use?' directly using grounded document context.",
+      "top_chunk_id": "doc_da07a9e7e59e_p1_c0",
+      "answer": "DocuLens AI uses the BAAI/bge-small-en-v1.5 model with 384 dimensions for its dense vector embeddings [Evidence 1].",
       "citations_count": 1,
       "citations": [
         {
           "reference": "[Evidence 1]",
           "rank": 1,
           "score": 0.8481217761086668,
-          "chunk_id": "doc_f8e18898136a_p1_c0",
-          "document_id": "doc_f8e18898136a",
+          "chunk_id": "doc_da07a9e7e59e_p1_c0",
+          "document_id": "doc_da07a9e7e59e",
           "page_number": 1,
           "chunk_index": 0,
           "evidence_text": "DocuLens AI is a multimodal document intelligence platform designed to process complex technical PDFs. The system employs dense vector embeddings using the BAAI/bge-small-en-v1.5 model with 384 dimensions. The vector store is powered by Qdrant for semantic search and fast nearest-neighbor retrieval. Document ingestion extracts text while preserving exact page numbers and hierarchical structure.",
           "text": "DocuLens AI is a multimodal document intelligence platform designed to process complex technical PDFs. The system employs dense vector embeddings using the BAAI/bge-small-en-v1.5 model with 384 dimensions. The vector store is powered by Qdrant for semantic search and fast nearest-neighbor retrieval. Document ingestion extracts text while preserving exact page numbers and hierarchical structure.",
+          "image_url": null,
+          "retrieval_type": "dense",
+          "sources": [],
           "metadata": {
             "char_count": 397
           }
@@ -87,7 +92,7 @@
       ],
       "is_grounded": true,
       "is_refusal": false,
-      "latency_sec": 0.001,
+      "latency_sec": 1.762,
       "pass": true
     },
     "test_b": {
@@ -95,20 +100,23 @@
       "expected_behavior": "Answers with refusal behavior quote from Page 2 evidence.",
       "retrieved_evidence_count": 2,
       "top_page": 2,
-      "top_chunk_id": "doc_f8e18898136a_p2_c0",
-      "answer": "Based on the provided evidence [Evidence 1], DocuLens AI answers 'What happens if the retrieved evidence does not contain sufficient facts?' directly using grounded document context.",
+      "top_chunk_id": "doc_da07a9e7e59e_p2_c0",
+      "answer": "If the retrieved evidence does not contain sufficient facts to answer the user query, the system explicitly responds with: \"I cannot answer this question based on the provided document evidence.\" [Evidence 1]",
       "citations_count": 1,
       "citations": [
         {
           "reference": "[Evidence 1]",
           "rank": 1,
           "score": 0.6623910663618977,
-          "chunk_id": "doc_f8e18898136a_p2_c0",
-          "document_id": "doc_f8e18898136a",
+          "chunk_id": "doc_da07a9e7e59e_p2_c0",
+          "document_id": "doc_da07a9e7e59e",
           "page_number": 2,
           "chunk_index": 0,
           "evidence_text": "For answer generation, DocuLens AI formats retrieved evidence chunks with bracketed identifiers like [Evidence 1]. The default language model is gemini-3.7-flash running via an OpenAI-compatible REST API. If the retrieved evidence does not contain sufficient facts to answer the user query, the system explicitly responds with \u2019I cannot answer this question based on the provided document evidence.\u2019 All citations map directly to document_id, page_number, and chunk_id.",
           "text": "For answer generation, DocuLens AI formats retrieved evidence chunks with bracketed identifiers like [Evidence 1]. The default language model is gemini-3.7-flash running via an OpenAI-compatible REST API. If the retrieved evidence does not contain sufficient facts to answer the user query, the system explicitly responds with \u2019I cannot answer this question based on the provided document evidence.\u2019 All citations map directly to document_id, page_number, and chunk_id.",
+          "image_url": null,
+          "retrieval_type": "dense",
+          "sources": [],
           "metadata": {
             "char_count": 469
           }
@@ -116,7 +124,7 @@
       ],
       "is_grounded": true,
       "is_refusal": false,
-      "latency_sec": 0.0,
+      "latency_sec": 1.665,
       "pass": true
     },
     "test_c": {

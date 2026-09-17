@@ -42,3 +42,14 @@ class ChunkingResult(BaseModel):
     document_id: str
     total_chunks: int
     chunks: List[DocumentChunk]
+
+
+class DocumentListItem(BaseModel):
+    document_id: str
+    filename: str
+    content_type: str = "application/pdf"
+    size_bytes: int
+    status: str = "ready"
+    total_pages: int = 0
+    uploaded_at: Optional[str] = None
+

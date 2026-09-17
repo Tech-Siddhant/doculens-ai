@@ -249,7 +249,8 @@ def test_answerable_unanswerable_split(tmp_path: Path) -> None:
 
 def test_real_seed_file_loads_cleanly() -> None:
     """Smoke test: the committed seed file must load without structural errors."""
-    seed = Path("data/gold_dataset.jsonl")
+    root = Path(__file__).resolve().parent.parent.parent
+    seed = root / "data/gold_dataset.jsonl"
     if not seed.exists():
         pytest.skip("data/gold_dataset.jsonl not present in this environment")
     bm = load_gold_dataset(seed)

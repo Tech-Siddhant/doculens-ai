@@ -7,7 +7,7 @@ client = TestClient(app)
 
 
 def test_upload_valid_pdf(valid_pdf_bytes, tmp_path, monkeypatch):
-    monkeypatch.setattr(settings, "STORAGE_DIR", str(tmp_path))
+    monkeypatch.setattr(settings, "UPLOAD_DIR", str(tmp_path))
 
     response = client.post(
         f"{settings.API_V1_STR}/documents/upload",
@@ -20,11 +20,11 @@ def test_upload_valid_pdf(valid_pdf_bytes, tmp_path, monkeypatch):
     assert data["document_id"].startswith("doc_")
     assert data["filename"] == "sample.pdf"
     assert data["status"] == "uploaded"
-    assert data["file_size_bytes"] == len(valid_pdf_bytes)
+    assert data["size_bytes"] == len(valid_pdf_bytes)
 
 
 def test_upload_invalid_file_extension(tmp_path, monkeypatch):
-    monkeypatch.setattr(settings, "STORAGE_DIR", str(tmp_path))
+    monkeypatch.setattr(settings, "UPLOAD_DIR", str(tmp_path))
 
     response = client.post(
         f"{settings.API_V1_STR}/documents/upload",
@@ -32,11 +32,11 @@ def test_upload_invalid_file_extension(tmp_path, monkeypatch):
     )
 
     assert response.status_code == 400
-    assert "Only PDF documents (.pdf) are supported" in response.json()["detail"]
+    assert "Only .pdf files are accepted" in response.json()["detail"]
 
 
 def test_upload_corrupted_pdf_content(tmp_path, monkeypatch):
-    monkeypatch.setattr(settings, "STORAGE_DIR", str(tmp_path))
+    monkeypatch.setattr(settings, "UPLOAD_DIR", str(tmp_path))
 
     # Fake PDF extension but bad bytes header
     response = client.post(
@@ -45,11 +45,11 @@ def test_upload_corrupted_pdf_content(tmp_path, monkeypatch):
     )
 
     assert response.status_code == 400
-    assert "does not contain valid PDF magic bytes" in response.json()["detail"]
+    assert "magic bytes do not match PDF format" in response.json()["detail"]
 
 
 def test_upload_oversized_file(valid_pdf_bytes, tmp_path, monkeypatch):
-    monkeypatch.setattr(settings, "STORAGE_DIR", str(tmp_path))
+    monkeypatch.setattr(settings, "UPLOAD_DIR", str(tmp_path))
     monkeypatch.setattr(settings, "MAX_UPLOAD_SIZE_BYTES", 100)  # Set tiny 100 bytes limit
 
     response = client.post(
@@ -58,4 +58,4 @@ def test_upload_oversized_file(valid_pdf_bytes, tmp_path, monkeypatch):
     )
 
     assert response.status_code == 413
-    assert "File size exceeds maximum permitted limit" in response.json()["detail"]
+    assert "exceeds maximum permitted limit" in response.json()["detail"]

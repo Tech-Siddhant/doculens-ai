@@ -55,10 +55,16 @@ class QdrantVectorStore:
         elif settings.QDRANT_URL:
             self._client = QdrantClient(
                 url=settings.QDRANT_URL,
-                api_key=settings.QDRANT_API_KEY,
+                api_key=settings.QDRANT_API_KEY.get_secret_value()
+                if settings.QDRANT_API_KEY
+                else None,
             )
         else:
             target_location = location or settings.QDRANT_LOCATION or ":memory:"
+            if isinstance(target_location, str):
+                target_location = target_location.strip("'\"").strip()
+                if not target_location:
+                    target_location = ":memory:"
             self._client = QdrantClient(location=target_location)
 
         self.ensure_collection_exists()

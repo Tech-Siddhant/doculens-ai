@@ -47,8 +47,9 @@ class ChunkingResult(BaseModel):
 
 
 class ChunkRequest(BaseModel):
-    chunk_size: int | None = None
-    chunk_overlap: int | None = None
+    chunk_size: int | None = Field(default=None, ge=50, le=10000, description="Character chunk size")
+    chunk_overlap: int | None = Field(default=None, ge=0, le=5000, description="Character chunk overlap")
+
 
 
 class RenderedPage(BaseModel):
@@ -67,3 +68,14 @@ class RenderingResult(BaseModel):
     dpi: int
     format: str
     pages: list[RenderedPage]
+
+
+class DocumentListItem(BaseModel):
+    document_id: str
+    filename: str
+    content_type: str = "application/pdf"
+    size_bytes: int
+    status: str = "ready"
+    total_pages: int = 0
+    uploaded_at: str | None = None
+

@@ -39,7 +39,20 @@ from app.schemas.generation import (
     GenerationResult,
     QuestionRequest,
 )
-from app.schemas.health import HealthResponse
+from app.schemas.health import (
+    AIQualityMetrics,
+    ComponentStatus,
+    GenerationMetrics,
+    HealthResponse,
+    IngestionMetrics,
+    PipelineTelemetryMetrics,
+    ReadinessResponse,
+    RequestTelemetryMetrics,
+    RerankingMetrics,
+    RetrievalMetrics,
+    SystemHealthMetrics,
+    SystemMetricsResponse,
+)
 from app.schemas.retrieval import (
     EvidenceItem,
     EvidenceSelectionResult,
@@ -64,6 +77,13 @@ from app.schemas.vector_store import VectorPointRecord, VectorStoreStats
 
 __all__ = [
     "HealthResponse",
+    "ReadinessResponse",
+    "SystemMetricsResponse",
+    "ComponentStatus",
+    "SystemHealthMetrics",
+    "RequestTelemetryMetrics",
+    "PipelineTelemetryMetrics",
+    "AIQualityMetrics",
     "DocumentUploadResponse",
     "ExtractedPage",
     "AssembledContext",

@@ -11,6 +11,7 @@ Tests deterministic and judge-based evaluation of:
 - Seed Benchmark Dataset Evaluation
 """
 
+from pathlib import Path
 import pytest
 
 from app.evaluation import (
@@ -392,7 +393,13 @@ def test_judges(sample_query: GoldQuery) -> None:
 
 # 10. End-to-end RAG Evaluator on real Gold Dataset
 def test_rag_evaluator_with_seed_dataset() -> None:
-    dataset = load_gold_dataset("data/gold_dataset.jsonl")
+    seed_path = Path("data/gold_dataset.jsonl")
+    if not seed_path.exists():
+        seed_path = Path(__file__).resolve().parent.parent.parent / "data/gold_dataset.jsonl"
+    if not seed_path.exists():
+        pytest.skip("data/gold_dataset.jsonl not found")
+
+    dataset = load_gold_dataset(seed_path)
     assert len(dataset.queries) > 0
 
     rag_eval = RAGEvaluator()

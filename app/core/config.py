@@ -1,6 +1,7 @@
 from functools import lru_cache
-from typing import Literal
+from typing import Any, Literal
 
+from pydantic import SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -13,9 +14,23 @@ class Settings(BaseSettings):
     HOST: str = "0.0.0.0"
     PORT: int = 8000
 
+    # Logging & CORS
+    # Restrictive default: only the local frontend origins. "*" with credentials
+    # effectively allows any origin; set explicitly only for trusted LAN/local tools.
+    LOG_LEVEL: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
+    CORS_ORIGINS: str = "http://localhost:3000,http://127.0.0.1:3000"
+
     # Storage & Upload Settings
     UPLOAD_DIR: str = "data/uploads"
     MAX_UPLOAD_SIZE_BYTES: int = 10 * 1024 * 1024  # 10 MB
+
+    # Lightweight rate limiting (in-process, per client IP).
+    # Disabled by default (single-user app); enable via env when exposed publicly.
+    # ponytail: fixed-window in-memory limiter, per uvicorn worker. If run with
+    # multiple workers or at scale, swap for a shared store (Redis) rate limiter.
+    RATE_LIMIT_ENABLED: bool = False
+    RATE_LIMIT_MAX_REQUESTS: int = 60
+    RATE_LIMIT_WINDOW_SECONDS: float = 60.0
 
     # Chunking Defaults
     DEFAULT_CHUNK_SIZE: int = 500
@@ -36,7 +51,7 @@ class Settings(BaseSettings):
     QDRANT_LOCATION: str | None = ":memory:"
     QDRANT_PATH: str | None = None
     QDRANT_URL: str | None = None
-    QDRANT_API_KEY: str | None = None
+    QDRANT_API_KEY: SecretStr | None = None
     QDRANT_COLLECTION_NAME: str = "document_chunks"
     QDRANT_VISUAL_COLLECTION_NAME: str = "visual_pages"
 
@@ -78,21 +93,36 @@ class Settings(BaseSettings):
     LLM_PROVIDER: Literal["mock", "gemini", "openai"] = "mock"
     LLM_MODEL: str = "gemini-3.7-flash"
     LLM_BASE_URL: str = "https://generativelanguage.googleapis.com/v1beta/openai"
-    LLM_API_KEY: str | None = None
-    GEMINI_API_KEY: str | None = None
+    LLM_API_KEY: SecretStr | None = None
+    GEMINI_API_KEY: SecretStr | None = None
     GEMINI_BASE_URL: str = "https://generativelanguage.googleapis.com/v1beta/openai"
     LLM_TEMPERATURE: float = 0.0
     LLM_MAX_TOKENS: int = 1000
-
-    # Optional secret placeholder (not hardcoded)
-    SECRET_KEY: str | None = None
+    LLM_TIMEOUT: float = 30.0
+    LLM_MAX_RETRIES: int = 2
 
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=True,
         extra="ignore",
+        env_list_delimiter=",",
     )
+
+    @model_validator(mode="after")
+    def validate_provider_key_required(self) -> "Settings":
+        """Fail fast and clearly when the selected provider needs an API key."""
+        if self.LLM_PROVIDER == "gemini" and not (self.GEMINI_API_KEY or self.LLM_API_KEY):
+            raise ValueError(
+                "LLM_PROVIDER='gemini' requires GEMINI_API_KEY (or LLM_API_KEY) "
+                "to be set via environment variables."
+            )
+        if self.LLM_PROVIDER == "openai" and not self.LLM_API_KEY:
+            raise ValueError(
+                "LLM_PROVIDER='openai' requires LLM_API_KEY to be set "
+                "via environment variables."
+            )
+        return self
 
 
 @lru_cache

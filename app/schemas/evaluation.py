@@ -341,6 +341,51 @@ class ExperimentResult(BaseModel):
     )
 
 
+class MetricDelta(BaseModel):
+    """Delta comparison between a current evaluation metric and a baseline."""
+
+    metric_name: str = Field(..., description="Identifier for the evaluated metric")
+    baseline_value: float | None = Field(default=None, description="Metric value from baseline run")
+    current_value: float | None = Field(default=None, description="Metric value from current run")
+    delta: float | None = Field(default=None, description="Absolute difference (current - baseline)")
+    relative_change_pct: float | None = Field(
+        default=None, description="Percentage change relative to baseline"
+    )
+    is_regression: bool = Field(
+        default=False, description="Whether delta breaches regression tolerance threshold"
+    )
+    is_improvement: bool = Field(
+        default=False, description="Whether delta represents significant positive improvement"
+    )
+
+
+class RegressionReport(BaseModel):
+    """Structured report comparing current evaluation run against a designated baseline."""
+
+    status: str = Field(
+        ..., description="Overall status: 'PASSED', 'REGRESSION_DETECTED', 'IMPROVED', or 'NEUTRAL'"
+    )
+    passed: bool = Field(
+        ..., description="True if no metric experienced unacceptable regression"
+    )
+    baseline_id: str | None = Field(default=None, description="Baseline experiment identifier")
+    current_id: str | None = Field(default=None, description="Current experiment identifier")
+    total_metrics_evaluated: int = Field(default=0, ge=0)
+    degradations: list[str] = Field(
+        default_factory=list, description="List of metric degradation descriptions"
+    )
+    improvements: list[str] = Field(
+        default_factory=list, description="List of metric improvement descriptions"
+    )
+    metric_deltas: dict[str, MetricDelta] = Field(
+        default_factory=dict, description="Detailed per-metric delta records"
+    )
+    timestamp: str = Field(
+        default_factory=lambda: datetime.now(timezone.utc).isoformat(),
+        description="ISO-8601 timestamp of report generation",
+    )
+
+
 __all__ = [
     "QuestionCategory",
     "ExpectedModality",
@@ -356,4 +401,6 @@ __all__ = [
     "EvaluationThresholds",
     "ExperimentSummary",
     "ExperimentResult",
+    "MetricDelta",
+    "RegressionReport",
 ]

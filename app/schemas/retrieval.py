@@ -22,8 +22,18 @@ class RetrievedChunk(BaseModel):
 
 
 class RetrievalQuery(BaseModel):
-    query: str = Field(..., min_length=1, description="Search query text")
-    top_k: int = Field(default=5, ge=1, description="Maximum number of items to retrieve")
+    query: str = Field(
+        ...,
+        min_length=1,
+        max_length=2000,
+        description="Search query text (1-2000 characters)",
+    )
+    top_k: int = Field(
+        default=5,
+        ge=1,
+        le=50,
+        description="Maximum number of items to retrieve (1-50)",
+    )
     score_threshold: float | None = Field(
         default=None, description="Optional minimum retrieval score threshold"
     )
@@ -86,15 +96,25 @@ class ModalityWeights(BaseModel):
 
 
 class HybridRetrievalQuery(BaseModel):
-    query: str = Field(..., min_length=1, description="Search query text")
-    top_k: int = Field(default=5, ge=1, description="Maximum number of items to retrieve")
+    query: str = Field(
+        ...,
+        min_length=1,
+        max_length=2000,
+        description="Search query text (1-2000 characters)",
+    )
+    top_k: int = Field(
+        default=5,
+        ge=1,
+        le=50,
+        description="Maximum number of items to retrieve (1-50)",
+    )
     strategy: Literal["weighted", "rrf"] = Field(
         default="weighted", description="Fusion strategy: 'weighted' or 'rrf'"
     )
     weights: ModalityWeights | None = Field(
         default=None, description="Modality weights for weighted fusion"
     )
-    rrf_k: int = Field(default=60, ge=1, description="RRF smoothing constant k")
+    rrf_k: int = Field(default=60, ge=1, le=1000, description="RRF smoothing constant k")
     score_threshold: float | None = Field(
         default=None, description="Optional minimum score threshold"
     )

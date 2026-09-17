@@ -2,6 +2,8 @@ import io
 from pypdf import PdfReader
 from pypdf.errors import PyPdfError
 
+MAX_PAGE_COUNT: int = 1000
+
 
 class PDFValidationError(Exception):
     """Custom exception raised when PDF validation fails."""
@@ -41,10 +43,20 @@ def validate_pdf_file(content: bytes, filename: str, max_size_bytes: int) -> Non
 
     try:
         reader = PdfReader(io.BytesIO(content))
-        # Ensure pages can be accessed
-        _ = len(reader.pages)
-    except Exception as exc:
+        total_pages = len(reader.pages)
+        if total_pages == 0:
+            raise PDFValidationError("PDF contains no readable pages.", status_code=400)
+        if total_pages > MAX_PAGE_COUNT:
+            raise PDFValidationError(
+                f"PDF exceeds maximum permitted page limit of {MAX_PAGE_COUNT} pages (found {total_pages}).",
+                status_code=400,
+            )
+    except PDFValidationError:
+        raise
+    except (PyPdfError, Exception) as exc:
+        err_type = type(exc).__name__
         raise PDFValidationError(
-            f"Corrupted or unreadable PDF document: {str(exc)}",
+            f"Corrupted or unreadable PDF document ({err_type}).",
             status_code=400,
         ) from exc
+
