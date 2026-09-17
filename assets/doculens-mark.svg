@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" role="img" aria-label="DocuLens AI">
+  <rect width="320" height="96" rx="18" fill="#0b0d10"/>
+  <g transform="translate(18 16)">
+    <rect x="0" y="4" width="50" height="58" rx="8" fill="none" stroke="#f2f4f7" stroke-width="3"/>
+    <path d="M34 4v16h16M11 34h28M11 45h22" fill="none" stroke="#8b949e" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="43" cy="47" r="11" fill="#0b0d10" stroke="#f2f4f7" stroke-width="3"/>
+    <path d="m51 55 8 8" stroke="#f2f4f7" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <text x="86" y="57" fill="#f2f4f7" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="28" font-weight="700">DocuLens AI</text>
+</svg>
