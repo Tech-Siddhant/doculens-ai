@@ -1,0 +1,56 @@
+name: Live Evaluation
+
+on:
+  workflow_dispatch:
+    inputs:
+      config:
+        description: "Baseline configuration to evaluate"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - all
+          - dense
+          - dense_bm25
+          - dense_bm25_visual
+          - hybrid_reranked
+      eval_type:
+        description: "Evaluation boundary"
+        required: true
+        default: "end_to_end"
+        type: choice
+        options:
+          - retrieval
+          - generation
+          - end_to_end
+
+jobs:
+  live-eval:
+    name: Live Model Evaluation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run live evaluation
+        env:
+          ENVIRONMENT: testing
+          LLM_PROVIDER: gemini
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+          QDRANT_LOCATION: ":memory:"
+        run: |
+          python scripts/run_evaluation.py --config ${{ inputs.config }} --eval-type ${{ inputs.eval_type }} --strict
