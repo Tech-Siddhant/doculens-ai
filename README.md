@@ -113,9 +113,58 @@ The core retrieval pipeline processes every query through seven sequential stage
 
 DocuLens includes a reproducible offline regression test harness (`scripts/run_evaluation.py`) designed to evaluate retrieval configurations against a curated ground-truth dataset.
 
-<div align="center">
-  <img src="assets/evaluation/retrieval-comparison.svg" alt="DocuLens Benchmark Comparison" width="950" />
-</div>
+Retrieval / Grounding Metrics
+────────────────────────────────────────────────────────
+
+R@5 - Recall
+
+dense                1.0000  ████████████████████
+dense+bm25           1.0000  ████████████████████
+dense+bm25_visual    1.0000  ████████████████████
+hybrid_reranked      1.0000  ████████████████████
+
+
+MRR@5 - Retrieval Performance
+
+dense                0.9556  ███████████████████░
+dense+bm25           0.9889  ████████████████████░
+dense+bm25_visual    1.0000  ████████████████████
+hybrid_reranked      1.0000  ████████████████████
+
+
+MRR@1 - Strict First-Rank
+
+dense                0.9111  ██████████████████░░
+dense+bm25           0.9778  ████████████████████░
+dense+bm25_visual    1.0000  ████████████████████
+hybrid_reranked      1.0000  ████████████████████
+
+
+Context Precision 
+
+dense                0.8327  █████████████████░░░
+dense+bm25           0.8530  █████████████████░░░
+dense+bm25_visual    0.8447  █████████████████░░░
+hybrid_reranked      0.8399  █████████████████░░░
+
+
+Context Recall 
+
+dense                1.0000  ████████████████████
+dense+bm25           1.0000  ████████████████████
+dense+bm25_visual    1.0000  ████████████████████
+hybrid_reranked      1.0000  ████████████████████
+
+Query Category Distribution
+Total = 55 queries
+
+factoid_text             35  ███████████████████████████████████
+multi_page_reasoning      4  ████
+table_lookup              3  ███
+figure_chart_analysis     2  ██
+methodology_summary       1  █
+other / unanswerable     10  ██████████
+
 
 ### Measured Baseline Results
 
