@@ -117,9 +117,7 @@ Yes — I’d use the **2-column technical evaluation layout**. It is cleaner fo
 
 Use this exact section in your README:
 
-````markdown
 ## Evaluation Results
-
 ### R@5 — Recall
 
 ```text
