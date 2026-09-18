@@ -117,7 +117,15 @@ Yes — I’d use the **2-column technical evaluation layout**. It is cleaner fo
 
 Use this exact section in your README:
 
-## Evaluation Results
+### Evaluation Results
+
+> **Synthetic offline regression benchmark — 55 canonical queries.**  
+> Not a general real-world performance benchmark.
+
+<table>
+<tr>
+<td width="50%">
+
 ### R@5 — Recall
 
 ```text
@@ -220,115 +228,6 @@ other / unanswerable     10  ██████████
 * **Context Precision** measures the proportion of retrieved context considered relevant.
 * **Context Recall** measures whether the required evidence was retrieved.
 
-The benchmark is intended for **offline regression testing and configuration comparison**, not as a general claim of real-world retrieval performance.
-
-### Evaluation Results
-
-> **Synthetic offline regression benchmark — 55 canonical queries.**  
-> Not a general real-world performance benchmark.
-
-<table>
-<tr>
-<td width="50%">
-
-#### R@5 — Recall
-
-```text
-dense                1.0000  ████████████████████
-dense+bm25           1.0000  ████████████████████
-dense+bm25_visual    1.0000  ████████████████████
-hybrid_reranked      1.0000  ████████████████████
-</td> <td width="50%">
-
-### MRR@5 — Retrieval Performance
-
-```text
-dense                0.9556  ███████████████████░
-dense+bm25           0.9889  ████████████████████░
-dense+bm25_visual    1.0000  ████████████████████
-hybrid_reranked      1.0000  ████████████████████
-```
-
-</td>
-</tr>
-
-<tr>
-<td width="50%" valign="top">
-
-### MRR@1 — First-Rank Retrieval
-
-```text
-dense                0.9111  ██████████████████░░
-dense+bm25           0.9778  ████████████████████░
-dense+bm25_visual    1.0000  ████████████████████
-hybrid_reranked      1.0000  ████████████████████
-```
-
-</td>
-<td width="50%" valign="top">
-
-### Context Precision
-
-```text
-dense                0.8327  █████████████████░░░
-dense+bm25           0.8530  █████████████████░░░
-dense+bm25_visual    0.8447  █████████████████░░░
-hybrid_reranked      0.8399  █████████████████░░░
-```
-
-</td>
-</tr>
-
-<tr>
-<td width="50%" valign="top">
-
-### Context Recall
-
-```text
-dense                1.0000  ████████████████████
-dense+bm25           1.0000  ████████████████████
-dense+bm25_visual    1.0000  ████████████████████
-hybrid_reranked      1.0000  ████████████████████
-```
-
-</td>
-<td width="50%" valign="top">
-
-### Query Category Distribution
-
-```text
-factoid_text             35  ███████████████████████████████████
-multi_page_reasoning      4  ████
-table_lookup              3  ███
-figure_chart_analysis     2  ██
-methodology_summary       1  █
-other / unanswerable     10  ██████████
-```
-
-</td>
-</tr>
-</table>
-
-### Benchmark Configuration
-
-| Property             | Value                                   |
-| -------------------- | --------------------------------------- |
-| Dataset              | 55 canonical queries                    |
-| Documents            | 10 domain PDFs                          |
-| Evaluation           | Synthetic / offline regression          |
-| Retrieval            | Dense, BM25, visual, hybrid + reranking |
-| Matching             | Deterministic chunk-ID matching         |
-| LLM responses        | Mocked                                  |
-| API key required     | No                                      |
-| Real-world benchmark | No                                      |
-
-### Interpretation
-
-* **R@5** measures whether the required evidence appears within the top 5 retrieved results.
-* **MRR@5** rewards retrieving the first relevant result closer to rank 1.
-* **MRR@1** measures first-rank retrieval quality.
-* **Context Precision** measures the proportion of retrieved context considered relevant.
-* **Context Recall** measures whether the required evidence was retrieved.
 
 ### Measured Baseline Results
 
