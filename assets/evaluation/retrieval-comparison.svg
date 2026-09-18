@@ -1,184 +1,276 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" width="100%" height="100%" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1060 620" width="100%" height="100%" fill="none">
   <defs>
-    <linearGradient id="bg-bench" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#070B14"/>
-      <stop offset="100%" stop-color="#0D1322"/>
-    </linearGradient>
-    <pattern id="grid-bench" width="20" height="20" patternUnits="userSpaceOnUse">
-      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1E293B" stroke-width="0.5" stroke-opacity="0.35"/>
+    <pattern id="grd" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#181F30" stroke-width="0.5"/>
     </pattern>
   </defs>
 
   <!-- Background -->
-  <rect width="960" height="480" rx="14" fill="url(#bg-bench)"/>
-  <rect width="960" height="480" rx="14" fill="url(#grid-bench)"/>
-  <rect width="958" height="478" x="1" y="1" rx="13" fill="none" stroke="#1E293B" stroke-width="1.5"/>
+  <rect width="1060" height="620" rx="4" fill="#0A0D14"/>
+  <rect width="1060" height="620" rx="4" fill="url(#grd)"/>
+  <rect width="1058" height="618" x="1" y="1" rx="3" fill="none" stroke="#242C40" stroke-width="1"/>
 
-  <!-- Title Header -->
-  <g transform="translate(36, 24)">
-    <rect x="0" y="0" width="6" height="34" rx="2" fill="#38BDF8"/>
-    <text x="18" y="18" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="700" fill="#F8FAFC">OFFLINE REGRESSION BENCHMARK: RETRIEVAL CONFIGURATIONS</text>
-    <text x="18" y="34" font-family="'JetBrains Mono', monospace" font-size="10.5" fill="#94A3B8">Synthetic / offline regression benchmark · 55 gold queries · 10 technical documents (data/gold_dataset.jsonl)</text>
-  </g>
+  <!-- ═══ HEADER ═══ -->
+  <rect x="0" y="0" width="1060" height="68" rx="4" fill="#0D1120"/>
+  <rect x="0" y="67" width="1060" height="1" fill="#242C40"/>
+  <text x="22" y="28" font-family="'Courier New', Courier, monospace" font-size="18" font-weight="700" fill="#E8ECF4">DocuLens AI — Evaluation Results</text>
+  <text x="22" y="46" font-family="'Courier New', Courier, monospace" font-size="11" fill="#6B7A9A">Synthetic offline regression benchmark (55 canonical queries)</text>
+  <text x="22" y="60" font-family="'Courier New', Courier, monospace" font-size="11" fill="#6B7A9A">Not a general real-world performance benchmark.</text>
 
-  <!-- LEFT PANEL: MRR & RECALL AT K=5 -->
-  <g transform="translate(36, 75)">
-    <rect width="425" height="270" rx="8" fill="#0B1220" stroke="#1E293B" stroke-width="1.2"/>
-    <text x="18" y="24" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#F8FAFC">Ranked Retrieval Quality (K = 5)</text>
-    <text x="18" y="38" font-family="'JetBrains Mono', monospace" font-size="9" fill="#64748B">Mean Reciprocal Rank (MRR@5) vs Recall@5</text>
+  <!-- Header metadata block -->
+  <rect x="720" y="10" width="320" height="52" rx="2" fill="#0F1628" stroke="#242C40" stroke-width="1"/>
+  <text x="734" y="26" font-family="'Courier New', Courier, monospace" font-size="10" fill="#8A96B0">Dataset :  55 canonical queries</text>
+  <text x="734" y="38" font-family="'Courier New', Courier, monospace" font-size="10" fill="#8A96B0">Mode    :  Offline (synthetic)</text>
+  <text x="734" y="50" font-family="'Courier New', Courier, monospace" font-size="10" fill="#8A96B0">Scope   :  Retrieval + Reranking + Grounding</text>
 
-    <!-- Legend -->
-    <rect x="250" y="16" width="10" height="10" rx="2" fill="#38BDF8"/>
-    <text x="266" y="25" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">MRR@5</text>
-    <rect x="330" y="16" width="10" height="10" rx="2" fill="#94A3B8"/>
-    <text x="346" y="25" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">Recall@5</text>
+  <!-- ═══ PANEL 1: RETRIEVAL PERFORMANCE (MRR@5) ═══ -->
+  <!-- Scale for MRR@5: range 0.90 to 1.00 → bar width 0..100 mapped to 0..220px -->
+  <rect x="14" y="80" width="320" height="250" rx="3" fill="#0D1120" stroke="#242C40" stroke-width="1"/>
+  <text x="24" y="100" font-family="'Courier New', Courier, monospace" font-size="12" font-weight="700" fill="#C8D0E0">1. Retrieval Performance ↑</text>
+  <line x1="24" y1="108" x2="324" y2="108" stroke="#242C40" stroke-width="1"/>
 
-    <!-- Grid lines -->
-    <line x1="120" y1="65" x2="400" y2="65" stroke="#1E293B" stroke-width="0.8"/>
-    <line x1="120" y1="115" x2="400" y2="115" stroke="#1E293B" stroke-width="0.8"/>
-    <line x1="120" y1="165" x2="400" y2="165" stroke="#1E293B" stroke-width="0.8"/>
-    <line x1="120" y1="215" x2="400" y2="215" stroke="#1E293B" stroke-width="0.8"/>
+  <text x="24" y="124" font-family="'Courier New', Courier, monospace" font-size="11" fill="#8A96B0">MRR@5</text>
+  <line x1="24" y1="130" x2="324" y2="130" stroke="#1C2438" stroke-width="1" stroke-dasharray="3,3"/>
 
-    <!-- Axis labels -->
-    <text x="120" y="248" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">0.0</text>
-    <text x="260" y="248" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">0.5</text>
-    <text x="390" y="248" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">1.0</text>
-    <line x1="120" y1="235" x2="400" y2="235" stroke="#334155" stroke-width="1"/>
+  <!-- dense: MRR@5 = 0.9556 → scale: (0.9556-0.90)/0.10*200 = 111px -->
+  <text x="24" y="148" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">dense</text>
+  <text x="128" y="148" font-family="'Courier New', Courier, monospace" font-size="10" fill="#C8D0E0">0.9556</text>
+  <rect x="188" y="138" width="111" height="12" rx="1" fill="#3A4560"/>
+  <rect x="188" y="138" width="3" height="12" rx="1" fill="#7A8AAA"/>
 
-    <!-- Row 1: dense -->
-    <text x="18" y="76" font-family="'JetBrains Mono', monospace" font-size="9.5" fill="#E2E8F0">dense</text>
-    <rect x="120" y="62" width="267.5" height="10" rx="2" fill="#38BDF8"/>
-    <text x="395" y="71" font-family="'JetBrains Mono', monospace" font-size="8" fill="#38BDF8">0.9556</text>
-    <rect x="120" y="74" width="280" height="6" rx="2" fill="#64748B"/>
-    <text x="405" y="80" font-family="'JetBrains Mono', monospace" font-size="7.5" fill="#94A3B8">1.000</text>
+  <!-- dense_bm25: MRR@5 = 0.9889 → (0.9889-0.90)/0.10*200 = 178px -->
+  <text x="24" y="168" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">dense+bm25</text>
+  <text x="128" y="168" font-family="'Courier New', Courier, monospace" font-size="10" fill="#C8D0E0">0.9889</text>
+  <rect x="188" y="158" width="178" height="12" rx="1" fill="#3A4560"/>
+  <rect x="188" y="158" width="3" height="12" rx="1" fill="#7A8AAA"/>
 
-    <!-- Row 2: dense_bm25 -->
-    <text x="18" y="126" font-family="'JetBrains Mono', monospace" font-size="9.5" fill="#E2E8F0">dense_bm25</text>
-    <rect x="120" y="112" width="276.8" height="10" rx="2" fill="#818CF8"/>
-    <text x="402" y="121" font-family="'JetBrains Mono', monospace" font-size="8" fill="#818CF8">0.9889</text>
-    <rect x="120" y="124" width="280" height="6" rx="2" fill="#64748B"/>
+  <!-- dense_bm25_visual: MRR@5 = 1.0000 → 200px -->
+  <text x="24" y="188" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">+visual</text>
+  <text x="128" y="188" font-family="'Courier New', Courier, monospace" font-size="10" fill="#C8D0E0">1.0000</text>
+  <rect x="188" y="178" width="200" height="12" rx="1" fill="#4A5878"/>
+  <rect x="188" y="178" width="3" height="12" rx="1" fill="#9AA4BC"/>
 
-    <!-- Row 3: dense_bm25_visual -->
-    <text x="18" y="174" font-family="'JetBrains Mono', monospace" font-size="9" fill="#E2E8F0">dense_bm25_vis</text>
-    <rect x="120" y="162" width="280" height="10" rx="2" fill="#34D399"/>
-    <text x="405" y="171" font-family="'JetBrains Mono', monospace" font-size="8" fill="#34D399">1.0000</text>
-    <rect x="120" y="174" width="280" height="6" rx="2" fill="#64748B"/>
+  <!-- hybrid_reranked: MRR@5 = 1.0000 → 200px (best) -->
+  <text x="24" y="208" font-family="'Courier New', Courier, monospace" font-size="10" font-weight="700" fill="#D8E0F0">hybrid+rerank</text>
+  <text x="128" y="208" font-family="'Courier New', Courier, monospace" font-size="10" font-weight="700" fill="#E8ECF4">1.0000</text>
+  <rect x="188" y="198" width="200" height="12" rx="1" fill="#5E6E90"/>
+  <rect x="188" y="198" width="3" height="12" rx="1" fill="#C8D0E0"/>
 
-    <!-- Row 4: hybrid_reranked -->
-    <text x="18" y="222" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#10B981">hybrid_rerank</text>
-    <rect x="120" y="210" width="280" height="10" rx="2" fill="#10B981"/>
-    <text x="405" y="219" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#10B981">1.0000</text>
-    <rect x="120" y="222" width="280" height="6" rx="2" fill="#64748B"/>
-  </g>
+  <text x="24" y="228" font-family="'Courier New', Courier, monospace" font-size="11" fill="#8A96B0">MRR@1 (strict first-rank)</text>
+  <line x1="24" y1="234" x2="324" y2="234" stroke="#1C2438" stroke-width="1" stroke-dasharray="3,3"/>
 
-  <!-- RIGHT PANEL: TOP-1 ACCURACY (K = 1) -->
-  <g transform="translate(480, 75)">
-    <rect width="444" height="270" rx="8" fill="#0B1220" stroke="#1E293B" stroke-width="1.2"/>
-    <text x="18" y="24" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#F8FAFC">Top-1 Precision &amp; Strict Rank (K = 1)</text>
-    <text x="18" y="38" font-family="'JetBrains Mono', monospace" font-size="9" fill="#64748B">Shows where multi-channel fusion resolves top-rank ambiguity</text>
+  <!-- dense: MRR@1 = 0.9111 → (0.9111-0.85)/0.15*200 = 81px -->
+  <text x="24" y="252" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">dense</text>
+  <text x="128" y="252" font-family="'Courier New', Courier, monospace" font-size="10" fill="#C8D0E0">0.9111</text>
+  <rect x="188" y="242" width="81" height="12" rx="1" fill="#3A4560"/>
+  <rect x="188" y="242" width="3" height="12" rx="1" fill="#7A8AAA"/>
 
-    <!-- Legend -->
-    <rect x="270" y="16" width="10" height="10" rx="2" fill="#38BDF8"/>
-    <text x="286" y="25" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">Recall@1</text>
-    <rect x="350" y="16" width="10" height="10" rx="2" fill="#FBBF24"/>
-    <text x="366" y="25" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">MRR@1</text>
+  <!-- dense_bm25: MRR@1 = 0.9778 → (0.9778-0.85)/0.15*200 = 170px -->
+  <text x="24" y="270" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">dense+bm25</text>
+  <text x="128" y="270" font-family="'Courier New', Courier, monospace" font-size="10" fill="#C8D0E0">0.9778</text>
+  <rect x="188" y="260" width="170" height="12" rx="1" fill="#3A4560"/>
+  <rect x="188" y="260" width="3" height="12" rx="1" fill="#7A8AAA"/>
 
-    <!-- Grid lines -->
-    <line x1="120" y1="65" x2="410" y2="65" stroke="#1E293B" stroke-width="0.8"/>
-    <line x1="120" y1="115" x2="410" y2="115" stroke="#1E293B" stroke-width="0.8"/>
-    <line x1="120" y1="165" x2="410" y2="165" stroke="#1E293B" stroke-width="0.8"/>
-    <line x1="120" y1="215" x2="410" y2="215" stroke="#1E293B" stroke-width="0.8"/>
+  <!-- dense_bm25_visual: MRR@1 = 1.0000 → 200px -->
+  <text x="24" y="290" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">+visual</text>
+  <text x="128" y="290" font-family="'Courier New', Courier, monospace" font-size="10" fill="#C8D0E0">1.0000</text>
+  <rect x="188" y="280" width="200" height="12" rx="1" fill="#4A5878"/>
+  <rect x="188" y="280" width="3" height="12" rx="1" fill="#9AA4BC"/>
 
-    <!-- Axis labels -->
-    <text x="120" y="248" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">0.80</text>
-    <text x="260" y="248" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">0.90</text>
-    <text x="400" y="248" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">1.00</text>
-    <line x1="120" y1="235" x2="410" y2="235" stroke="#334155" stroke-width="1"/>
+  <!-- hybrid_reranked: MRR@1 = 1.0000 → 200px -->
+  <text x="24" y="310" font-family="'Courier New', Courier, monospace" font-size="10" font-weight="700" fill="#D8E0F0">hybrid+rerank</text>
+  <text x="128" y="310" font-family="'Courier New', Courier, monospace" font-size="10" font-weight="700" fill="#E8ECF4">1.0000</text>
+  <rect x="188" y="300" width="200" height="12" rx="1" fill="#5E6E90"/>
+  <rect x="188" y="300" width="3" height="12" rx="1" fill="#C8D0E0"/>
 
-    <!-- Row 1: dense (Recall@1: 0.900, MRR@1: 0.911) -->
-    <!-- Scale: [0.80 to 1.00] mapped to [120 to 400] -> span 280 for 0.20 -> 1400 per 1.0 -->
-    <!-- 0.900 -> 120 + 140 = 260 width 140 -->
-    <!-- 0.911 -> 120 + 155.4 = 275.4 -->
-    <text x="18" y="76" font-family="'JetBrains Mono', monospace" font-size="9.5" fill="#E2E8F0">dense</text>
-    <rect x="120" y="62" width="140" height="9" rx="2" fill="#38BDF8"/>
-    <text x="268" y="70" font-family="'JetBrains Mono', monospace" font-size="8" fill="#38BDF8">0.900</text>
-    <rect x="120" y="73" width="155.4" height="7" rx="2" fill="#FBBF24"/>
-    <text x="283" y="80" font-family="'JetBrains Mono', monospace" font-size="7.5" fill="#FBBF24">0.911</text>
+  <!-- ═══ PANEL 2: CONTEXT QUALITY ═══ -->
+  <!-- Context Precision range: 0.83–0.86 → scale 0..60px over 0.03 range -->
+  <rect x="346" y="80" width="320" height="250" rx="3" fill="#0D1120" stroke="#242C40" stroke-width="1"/>
+  <text x="356" y="100" font-family="'Courier New', Courier, monospace" font-size="12" font-weight="700" fill="#C8D0E0">2. Context Quality ↑</text>
+  <line x1="356" y1="108" x2="656" y2="108" stroke="#242C40" stroke-width="1"/>
 
-    <!-- Row 2: dense_bm25 (Recall@1: 0.967, MRR@1: 0.978) -->
-    <!-- 0.9667 -> 120 + 233.3 = 353.3 -->
-    <!-- 0.9778 -> 120 + 248.9 = 368.9 -->
-    <text x="18" y="126" font-family="'JetBrains Mono', monospace" font-size="9.5" fill="#E2E8F0">dense_bm25</text>
-    <rect x="120" y="112" width="233.3" height="9" rx="2" fill="#38BDF8"/>
-    <text x="360" y="120" font-family="'JetBrains Mono', monospace" font-size="8" fill="#38BDF8">0.967</text>
-    <rect x="120" y="123" width="248.9" height="7" rx="2" fill="#FBBF24"/>
-    <text x="375" y="130" font-family="'JetBrains Mono', monospace" font-size="7.5" fill="#FBBF24">0.978</text>
+  <text x="356" y="124" font-family="'Courier New', Courier, monospace" font-size="11" fill="#8A96B0">Context Precision</text>
+  <line x1="356" y1="130" x2="656" y2="130" stroke="#1C2438" stroke-width="1" stroke-dasharray="3,3"/>
 
-    <!-- Row 3: dense_bm25_visual (Recall@1: 0.989, MRR@1: 1.000) -->
-    <!-- 0.9889 -> 120 + 264.4 = 384.4 -->
-    <!-- 1.0000 -> 120 + 280 = 400.0 -->
-    <text x="18" y="174" font-family="'JetBrains Mono', monospace" font-size="9" fill="#E2E8F0">dense_bm25_vis</text>
-    <rect x="120" y="162" width="264.4" height="9" rx="2" fill="#38BDF8"/>
-    <text x="390" y="170" font-family="'JetBrains Mono', monospace" font-size="8" fill="#38BDF8">0.989</text>
-    <rect x="120" y="173" width="280" height="7" rx="2" fill="#FBBF24"/>
-    <text x="405" y="180" font-family="'JetBrains Mono', monospace" font-size="7.5" fill="#FBBF24">1.000</text>
+  <!-- Scale: range 0.82..0.86 → 0..240px → 1 unit=60px -->
+  <!-- dense: 0.8327 → (0.8327-0.82)*240/0.04 = 77px -->
+  <text x="356" y="148" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">dense</text>
+  <text x="460" y="148" font-family="'Courier New', Courier, monospace" font-size="10" fill="#C8D0E0">0.8327</text>
+  <rect x="530" y="138" width="77" height="12" rx="1" fill="#3A4560"/>
+  <rect x="530" y="138" width="3" height="12" rx="1" fill="#7A8AAA"/>
 
-    <!-- Row 4: hybrid_reranked (Recall@1: 0.989, MRR@1: 1.000) -->
-    <text x="18" y="222" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#10B981">hybrid_rerank</text>
-    <rect x="120" y="210" width="264.4" height="9" rx="2" fill="#10B981"/>
-    <text x="390" y="218" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#10B981">0.989</text>
-    <rect x="120" y="221" width="280" height="7" rx="2" fill="#FBBF24"/>
-    <text x="405" y="228" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" fill="#FBBF24">1.000</text>
-  </g>
+  <!-- dense_bm25: 0.8530 → (0.8530-0.82)*240/0.04 = 198px -->
+  <text x="356" y="168" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">dense+bm25</text>
+  <text x="460" y="168" font-family="'Courier New', Courier, monospace" font-size="10" fill="#C8D0E0">0.8530</text>
+  <rect x="530" y="158" width="198" height="12" rx="1" fill="#4A5878"/>
+  <rect x="530" y="158" width="3" height="12" rx="1" fill="#9AA4BC"/>
 
-  <!-- BOTTOM TABLE: EXACT AUTHORITATIVE RESULTS -->
-  <g transform="translate(36, 360)">
-    <rect width="888" height="96" rx="8" fill="#0B1220" stroke="#1E293B" stroke-width="1.2"/>
-    
-    <!-- Table Header -->
-    <text x="18" y="24" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="700" fill="#94A3B8">CONFIGURATION</text>
-    <text x="210" y="24" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="700" fill="#94A3B8">RECALL@5</text>
-    <text x="310" y="24" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="700" fill="#94A3B8">MRR@5</text>
-    <text x="410" y="24" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="700" fill="#94A3B8">RECALL@1</text>
-    <text x="510" y="24" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="700" fill="#94A3B8">MRR@1</text>
-    <text x="610" y="24" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="700" fill="#94A3B8">CTX PRECISION</text>
-    <text x="750" y="24" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="700" fill="#94A3B8">GATE STATUS</text>
-    <line x1="18" y1="32" x2="870" y2="32" stroke="#1E293B" stroke-width="1"/>
+  <!-- dense_bm25_visual: 0.8447 → (0.8447-0.82)*240/0.04 = 148px -->
+  <text x="356" y="188" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">+visual</text>
+  <text x="460" y="188" font-family="'Courier New', Courier, monospace" font-size="10" fill="#C8D0E0">0.8447</text>
+  <rect x="530" y="178" width="148" height="12" rx="1" fill="#3A4560"/>
+  <rect x="530" y="178" width="3" height="12" rx="1" fill="#7A8AAA"/>
 
-    <!-- Row 1: dense -->
-    <text x="18" y="47" font-family="'JetBrains Mono', monospace" font-size="9" fill="#E2E8F0">dense</text>
-    <text x="210" y="47" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">1.0000</text>
-    <text x="310" y="47" font-family="'JetBrains Mono', monospace" font-size="9" fill="#38BDF8">0.9556</text>
-    <text x="410" y="47" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">0.9000</text>
-    <text x="510" y="47" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">0.9111</text>
-    <text x="610" y="47" font-family="'JetBrains Mono', monospace" font-size="9" fill="#94A3B8">0.8327</text>
-    <text x="750" y="47" font-family="'JetBrains Mono', monospace" font-size="9" fill="#10B981">PASS (min 0.75)</text>
+  <!-- hybrid_reranked: 0.8399 → (0.8399-0.82)*240/0.04 = 119px -->
+  <text x="356" y="208" font-family="'Courier New', Courier, monospace" font-size="10" font-weight="700" fill="#D8E0F0">hybrid+rerank</text>
+  <text x="460" y="208" font-family="'Courier New', Courier, monospace" font-size="10" font-weight="700" fill="#E8ECF4">0.8399</text>
+  <rect x="530" y="198" width="119" height="12" rx="1" fill="#3A4560"/>
+  <rect x="530" y="198" width="3" height="12" rx="1" fill="#7A8AAA"/>
 
-    <!-- Row 2: dense_bm25 -->
-    <text x="18" y="62" font-family="'JetBrains Mono', monospace" font-size="9" fill="#E2E8F0">dense_bm25</text>
-    <text x="210" y="62" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">1.0000</text>
-    <text x="310" y="62" font-family="'JetBrains Mono', monospace" font-size="9" fill="#818CF8">0.9889</text>
-    <text x="410" y="62" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">0.9667</text>
-    <text x="510" y="62" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">0.9778</text>
-    <text x="610" y="62" font-family="'JetBrains Mono', monospace" font-size="9" fill="#94A3B8">0.8530</text>
-    <text x="750" y="62" font-family="'JetBrains Mono', monospace" font-size="9" fill="#10B981">PASS (min 0.75)</text>
+  <text x="356" y="230" font-family="'Courier New', Courier, monospace" font-size="11" fill="#8A96B0">Context Recall (all configs)</text>
+  <line x1="356" y1="236" x2="656" y2="236" stroke="#1C2438" stroke-width="1" stroke-dasharray="3,3"/>
 
-    <!-- Row 3: dense_bm25_visual -->
-    <text x="18" y="77" font-family="'JetBrains Mono', monospace" font-size="9" fill="#E2E8F0">dense_bm25_visual</text>
-    <text x="210" y="77" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">1.0000</text>
-    <text x="310" y="77" font-family="'JetBrains Mono', monospace" font-size="9" fill="#34D399">1.0000</text>
-    <text x="410" y="77" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">0.9889</text>
-    <text x="510" y="77" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">1.0000</text>
-    <text x="610" y="77" font-family="'JetBrains Mono', monospace" font-size="9" fill="#94A3B8">0.8447</text>
-    <text x="750" y="77" font-family="'JetBrains Mono', monospace" font-size="9" fill="#10B981">PASS (min 0.75)</text>
+  <!-- Context Recall = 1.0000 for all 4 configs -->
+  <text x="356" y="254" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">dense</text>
+  <text x="460" y="254" font-family="'Courier New', Courier, monospace" font-size="10" fill="#C8D0E0">1.0000</text>
+  <rect x="530" y="244" width="110" height="12" rx="1" fill="#5E6E90"/>
+  <rect x="530" y="244" width="3" height="12" rx="1" fill="#C8D0E0"/>
 
-    <!-- Row 4: hybrid_reranked -->
-    <text x="18" y="92" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#10B981">hybrid_reranked</text>
-    <text x="210" y="92" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#10B981">1.0000</text>
-    <text x="310" y="92" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#10B981">1.0000</text>
-    <text x="410" y="92" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#10B981">0.9889</text>
-    <text x="510" y="92" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#10B981">1.0000</text>
-    <text x="610" y="92" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#10B981">0.8399</text>
-    <text x="750" y="92" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#10B981">PASS (min 0.75)</text>
-  </g>
+  <text x="356" y="272" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">dense+bm25</text>
+  <text x="460" y="272" font-family="'Courier New', Courier, monospace" font-size="10" fill="#C8D0E0">1.0000</text>
+  <rect x="530" y="262" width="110" height="12" rx="1" fill="#5E6E90"/>
+  <rect x="530" y="262" width="3" height="12" rx="1" fill="#C8D0E0"/>
+
+  <text x="356" y="290" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">+visual</text>
+  <text x="460" y="290" font-family="'Courier New', Courier, monospace" font-size="10" fill="#C8D0E0">1.0000</text>
+  <rect x="530" y="280" width="110" height="12" rx="1" fill="#5E6E90"/>
+  <rect x="530" y="280" width="3" height="12" rx="1" fill="#C8D0E0"/>
+
+  <text x="356" y="308" font-family="'Courier New', Courier, monospace" font-size="10" font-weight="700" fill="#D8E0F0">hybrid+rerank</text>
+  <text x="460" y="308" font-family="'Courier New', Courier, monospace" font-size="10" font-weight="700" fill="#E8ECF4">1.0000</text>
+  <rect x="530" y="298" width="110" height="12" rx="1" fill="#5E6E90"/>
+  <rect x="530" y="298" width="3" height="12" rx="1" fill="#C8D0E0"/>
+
+  <!-- ═══ PANEL 3: QUERY CATEGORY DISTRIBUTION ═══ -->
+  <rect x="678" y="80" width="368" height="250" rx="3" fill="#0D1120" stroke="#242C40" stroke-width="1"/>
+  <text x="688" y="100" font-family="'Courier New', Courier, monospace" font-size="12" font-weight="700" fill="#C8D0E0">3. Query Category Distribution</text>
+  <line x1="688" y1="108" x2="1036" y2="108" stroke="#242C40" stroke-width="1"/>
+
+  <!-- Actual category breakdown from baseline_results.json -->
+  <!-- Total: factoid_text=35, multi_page_reasoning=4, table_lookup=3, figure_chart_analysis=2, methodology_summary=1 + 10 unanswerable = 55 -->
+  <!-- Bar scale: max=35 → 200px -->
+  <text x="688" y="130" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">factoid_text</text>
+  <text x="830" y="130" font-family="'Courier New', Courier, monospace" font-size="10" fill="#C8D0E0">35</text>
+  <rect x="858" y="120" width="200" height="12" rx="1" fill="#5E6E90"/>
+
+  <text x="688" y="150" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">multi_page_reasoning</text>
+  <text x="830" y="150" font-family="'Courier New', Courier, monospace" font-size="10" fill="#C8D0E0">4</text>
+  <rect x="858" y="140" width="23" height="12" rx="1" fill="#3A4560"/>
+
+  <text x="688" y="170" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">table_lookup</text>
+  <text x="830" y="170" font-family="'Courier New', Courier, monospace" font-size="10" fill="#C8D0E0">3</text>
+  <rect x="858" y="160" width="17" height="12" rx="1" fill="#3A4560"/>
+
+  <text x="688" y="190" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">figure_chart_analysis</text>
+  <text x="830" y="190" font-family="'Courier New', Courier, monospace" font-size="10" fill="#C8D0E0">2</text>
+  <rect x="858" y="180" width="11" height="12" rx="1" fill="#3A4560"/>
+
+  <text x="688" y="210" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">methodology_summary</text>
+  <text x="830" y="210" font-family="'Courier New', Courier, monospace" font-size="10" fill="#C8D0E0">1</text>
+  <rect x="858" y="200" width="6" height="12" rx="1" fill="#3A4560"/>
+
+  <text x="688" y="230" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">other / unanswerable</text>
+  <text x="830" y="230" font-family="'Courier New', Courier, monospace" font-size="10" fill="#C8D0E0">10</text>
+  <rect x="858" y="220" width="57" height="12" rx="1" fill="#2E3A52"/>
+
+  <line x1="688" y1="244" x2="1036" y2="244" stroke="#1C2438" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="688" y="260" font-family="'Courier New', Courier, monospace" font-size="10" fill="#6B7A9A">Total Queries: 55   ·   Documents: 10   ·   Configs: 4</text>
+  <text x="688" y="278" font-family="'Courier New', Courier, monospace" font-size="10" fill="#6B7A9A">Dataset: data/gold_dataset.jsonl</text>
+  <text x="688" y="296" font-family="'Courier New', Courier, monospace" font-size="10" fill="#6B7A9A">Corpus:  data/samples/*.pdf (10 domain PDFs)</text>
+  <text x="688" y="314" font-family="'Courier New', Courier, monospace" font-size="10" fill="#6B7A9A">Runner:  scripts/run_evaluation.py --config all --strict</text>
+
+  <!-- ═══ PANEL 4: COMPLETE RESULTS TABLE ═══ -->
+  <rect x="14" y="342" width="316" height="264" rx="3" fill="#0D1120" stroke="#242C40" stroke-width="1"/>
+  <text x="24" y="362" font-family="'Courier New', Courier, monospace" font-size="12" font-weight="700" fill="#C8D0E0">4. Full Metrics Table</text>
+  <line x1="24" y1="370" x2="320" y2="370" stroke="#242C40" stroke-width="1"/>
+
+  <!-- Header row -->
+  <text x="24" y="385" font-family="'Courier New', Courier, monospace" font-size="9" fill="#6B7A9A">Configuration      R@5    MRR@5  MRR@1  CTX-P  GATE</text>
+  <line x1="24" y1="390" x2="320" y2="390" stroke="#1C2438" stroke-width="1" stroke-dasharray="2,2"/>
+
+  <!-- dense -->
+  <text x="24" y="408" font-family="'Courier New', Courier, monospace" font-size="9" fill="#9AA4BC">dense              1.000  0.956  0.911  0.833  </text>
+  <text x="284" y="408" font-family="'Courier New', Courier, monospace" font-size="9" fill="#7AAA88">PASS</text>
+
+  <!-- dense_bm25 -->
+  <text x="24" y="424" font-family="'Courier New', Courier, monospace" font-size="9" fill="#9AA4BC">dense_bm25         1.000  0.989  0.978  0.853  </text>
+  <text x="284" y="424" font-family="'Courier New', Courier, monospace" font-size="9" fill="#7AAA88">PASS</text>
+
+  <!-- dense_bm25_visual -->
+  <text x="24" y="440" font-family="'Courier New', Courier, monospace" font-size="9" fill="#9AA4BC">dense_bm25_visual  1.000  1.000  1.000  0.845  </text>
+  <text x="284" y="440" font-family="'Courier New', Courier, monospace" font-size="9" fill="#7AAA88">PASS</text>
+
+  <!-- hybrid_reranked (best) -->
+  <text x="24" y="456" font-family="'Courier New', Courier, monospace" font-size="9" font-weight="700" fill="#D8E0F0">hybrid_reranked    1.000  1.000  1.000  0.840  </text>
+  <text x="284" y="456" font-family="'Courier New', Courier, monospace" font-size="9" font-weight="700" fill="#7AAA88">PASS</text>
+
+  <line x1="24" y1="466" x2="320" y2="466" stroke="#1C2438" stroke-width="1" stroke-dasharray="2,2"/>
+  <text x="24" y="482" font-family="'Courier New', Courier, monospace" font-size="9" fill="#6B7A9A">Thresholds: R@5≥0.75  MRR@5≥0.65  CTX-P≥0.70</text>
+  <text x="24" y="498" font-family="'Courier New', Courier, monospace" font-size="9" fill="#6B7A9A">All values from data/baseline_results.json</text>
+  <text x="24" y="514" font-family="'Courier New', Courier, monospace" font-size="9" fill="#6B7A9A">Latency: offline mock (LLM=MockProvider)</text>
+  <text x="24" y="530" font-family="'Courier New', Courier, monospace" font-size="9" fill="#6B7A9A">CTX-R (Context Recall) = 1.000 for all configs</text>
+  <text x="24" y="546" font-family="'Courier New', Courier, monospace" font-size="9" fill="#6B7A9A">P@1 = MRR@1 (binary relevance, single-hop queries)</text>
+  <line x1="24" y1="556" x2="320" y2="556" stroke="#1C2438" stroke-width="1" stroke-dasharray="2,2"/>
+  <text x="24" y="572" font-family="'Courier New', Courier, monospace" font-size="9" fill="#4B5572">Recall@5 = 1.000 across all configs; differentiation</text>
+  <text x="24" y="586" font-family="'Courier New', Courier, monospace" font-size="9" fill="#4B5572">visible in MRR@1: 0.911 (dense) → 1.000 (+visual).</text>
+  <text x="24" y="600" font-family="'Courier New', Courier, monospace" font-size="9" fill="#4B5572">Fusion resolves first-rank ambiguity on this corpus.</text>
+
+  <!-- ═══ PANEL 5: PIPELINE ARCHITECTURE SUMMARY ═══ -->
+  <rect x="342" y="342" width="326" height="264" rx="3" fill="#0D1120" stroke="#242C40" stroke-width="1"/>
+  <text x="352" y="362" font-family="'Courier New', Courier, monospace" font-size="12" font-weight="700" fill="#C8D0E0">5. Pipeline Architecture</text>
+  <line x1="352" y1="370" x2="658" y2="370" stroke="#242C40" stroke-width="1"/>
+
+  <text x="352" y="388" font-family="'Courier New', Courier, monospace" font-size="10" fill="#8A96B0">Stage</text>
+  <text x="500" y="388" font-family="'Courier New', Courier, monospace" font-size="10" fill="#8A96B0">Model / Algorithm</text>
+  <line x1="352" y1="394" x2="658" y2="394" stroke="#1C2438" stroke-width="1" stroke-dasharray="2,2"/>
+
+  <text x="352" y="412" font-family="'Courier New', Courier, monospace" font-size="9.5" fill="#9AA4BC">Dense Embed</text>
+  <text x="500" y="412" font-family="'Courier New', Courier, monospace" font-size="9.5" fill="#C8D0E0">BAAI/bge-small-en-v1.5</text>
+  <text x="352" y="428" font-family="'Courier New', Courier, monospace" font-size="9.5" fill="#9AA4BC">Sparse / BM25</text>
+  <text x="500" y="428" font-family="'Courier New', Courier, monospace" font-size="9.5" fill="#C8D0E0">Okapi BM25 k1=1.2 b=0.75</text>
+  <text x="352" y="444" font-family="'Courier New', Courier, monospace" font-size="9.5" fill="#9AA4BC">Visual Embed</text>
+  <text x="500" y="444" font-family="'Courier New', Courier, monospace" font-size="9.5" fill="#C8D0E0">BAAI/bge-visualized-base</text>
+  <text x="352" y="460" font-family="'Courier New', Courier, monospace" font-size="9.5" fill="#9AA4BC">Fusion</text>
+  <text x="500" y="460" font-family="'Courier New', Courier, monospace" font-size="9.5" fill="#C8D0E0">Reciprocal Rank Fusion k=60</text>
+  <text x="352" y="476" font-family="'Courier New', Courier, monospace" font-size="9.5" fill="#9AA4BC">Reranker</text>
+  <text x="500" y="476" font-family="'Courier New', Courier, monospace" font-size="9.5" fill="#C8D0E0">BAAI/bge-reranker-base</text>
+  <text x="352" y="492" font-family="'Courier New', Courier, monospace" font-size="9.5" fill="#9AA4BC">Evidence Gate</text>
+  <text x="500" y="492" font-family="'Courier New', Courier, monospace" font-size="9.5" fill="#C8D0E0">Deterministic threshold check</text>
+  <text x="352" y="508" font-family="'Courier New', Courier, monospace" font-size="9.5" fill="#9AA4BC">Citation Guard</text>
+  <text x="500" y="508" font-family="'Courier New', Courier, monospace" font-size="9.5" fill="#C8D0E0">Programmatic [Evidence N] verify</text>
+
+  <line x1="352" y1="520" x2="658" y2="520" stroke="#1C2438" stroke-width="1" stroke-dasharray="2,2"/>
+
+  <text x="352" y="536" font-family="'Courier New', Courier, monospace" font-size="9.5" fill="#9AA4BC">Backend</text>
+  <text x="500" y="536" font-family="'Courier New', Courier, monospace" font-size="9.5" fill="#C8D0E0">FastAPI + Uvicorn (Python 3.11)</text>
+  <text x="352" y="552" font-family="'Courier New', Courier, monospace" font-size="9.5" fill="#9AA4BC">Frontend</text>
+  <text x="500" y="552" font-family="'Courier New', Courier, monospace" font-size="9.5" fill="#C8D0E0">Next.js 14 App Router</text>
+  <text x="352" y="568" font-family="'Courier New', Courier, monospace" font-size="9.5" fill="#9AA4BC">Storage</text>
+  <text x="500" y="568" font-family="'Courier New', Courier, monospace" font-size="9.5" fill="#C8D0E0">Qdrant in-memory + local disk</text>
+  <text x="352" y="584" font-family="'Courier New', Courier, monospace" font-size="9.5" fill="#9AA4BC">Tests</text>
+  <text x="500" y="584" font-family="'Courier New', Courier, monospace" font-size="9.5" fill="#C8D0E0">483 backend · 18 frontend (100%)</text>
+
+  <!-- ═══ PANEL 6: EVALUATION NOTES ═══ -->
+  <rect x="680" y="342" width="366" height="264" rx="3" fill="#0D1120" stroke="#242C40" stroke-width="1"/>
+  <text x="690" y="362" font-family="'Courier New', Courier, monospace" font-size="12" font-weight="700" fill="#C8D0E0">6. Evaluation Notes</text>
+  <line x1="690" y1="370" x2="1036" y2="370" stroke="#242C40" stroke-width="1"/>
+
+  <text x="690" y="390" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">&gt; 55 canonical queries from gold_dataset.jsonl</text>
+  <text x="690" y="408" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">&gt; Synthetic/offline regression benchmark</text>
+  <text x="690" y="426" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">&gt; Evaluates retrieval, reranking, context quality</text>
+  <text x="690" y="444" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">&gt; Categories: factoid, table, figure, multi-page</text>
+  <text x="690" y="462" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">&gt; Scores by deterministic chunk ID matching</text>
+  <text x="690" y="480" font-family="'Courier New', Courier, monospace" font-size="10" fill="#9AA4BC">&gt; LLM responses mocked (no API keys required)</text>
+  <text x="690" y="498" font-family="'Courier New', Courier, monospace" font-size="10" fill="#4B5572">&gt; Not a real-world performance measure</text>
+  <text x="690" y="516" font-family="'Courier New', Courier, monospace" font-size="10" fill="#4B5572">&gt; Latency figures are offline (0ms mock LLM)</text>
+  <line x1="690" y1="528" x2="1036" y2="528" stroke="#1C2438" stroke-width="1" stroke-dasharray="2,2"/>
+
+  <text x="690" y="546" font-family="'Courier New', Courier, monospace" font-size="10" fill="#6B7A9A">To reproduce:</text>
+  <text x="690" y="562" font-family="'Courier New', Courier, monospace" font-size="10" fill="#7A8AAA">  python scripts/run_evaluation.py \</text>
+  <text x="690" y="578" font-family="'Courier New', Courier, monospace" font-size="10" fill="#7A8AAA">    --config all --strict</text>
+
+  <!-- Footer DocuLens AI brand -->
+  <rect x="680" y="596" width="366" height="4" rx="1" fill="#1E293B"/>
+  <text x="690" y="611" font-family="'Courier New', Courier, monospace" font-size="9" fill="#4B5572">DocuLens AI — Find. Understand. Verify. Cite.</text>
+  <text x="916" y="611" font-family="'Courier New', Courier, monospace" font-size="9" fill="#3A4560">github.com/Tech-Siddhant/doculens-ai</text>
 </svg>
