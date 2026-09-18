@@ -47,7 +47,7 @@ The document management workspace enables multi-format upload, file tracking, st
 Users query ingested documents using natural language, selecting answer depth (`Concise`, `Balanced`, `Detailed`). The engine parses inline clickable citations, maps bounding boxes, and returns strict refusals when sufficient evidence is unavailable.
 
 <div align="center">
-  <img src="pages/grounded-qa.png" alt="DocuLens Grounded Q&A" width="950" />
+  <img src="pages/Screenshot From 2026-09-18 15-54-21.png" alt="DocuLens Grounded Q&A" width="950" />
 </div>
 
 ### 3. Retrieval & Pipeline Diagnostics
