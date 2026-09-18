@@ -21,6 +21,7 @@ class AnswerOrchestrator:
         document_id: str | None = None,
         top_k: int = 5,
         score_threshold: float | None = None,
+        answer_style: Literal["concise", "balanced", "detailed"] = "balanced",
     ) -> GenerationResult:
         trace_id = f"trace_{uuid.uuid4().hex[:8]}"
         query_id = f"q_{uuid.uuid4().hex[:12]}"
@@ -86,10 +87,11 @@ class AnswerOrchestrator:
             status="success",
             t0=t0,
             t1=t1,
-            desc=f"Query parsed ({len(clean_question)} chars)",
+            desc=f"Query parsed ({len(clean_question)} chars, style: {answer_style})",
             details={
                 "Query length": f"{len(clean_question)} chars",
                 "Target document": document_id or "All documents",
+                "Answer style": answer_style.capitalize(),
             },
             input_count=len(question) if question else 0,
             output_count=len(clean_question),
@@ -273,12 +275,14 @@ class AnswerOrchestrator:
                 question=clean_question,
                 evidence=valid_items,
                 document_id=document_id,
+                answer_style=answer_style,
             )
             t1 = time.perf_counter()
             gen_dur = max(0.0, (t1 - t0) * 1000)
             gen_details: dict[str, Any] = {
                 "Provider": gen_res.provider,
                 "Model": gen_res.model,
+                "Answer style": answer_style.capitalize(),
                 "Generation latency": f"{gen_dur:.0f} ms",
             }
             if gen_res.usage:

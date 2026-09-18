@@ -791,6 +791,7 @@ async def ask_document(
             document_id=document_id,
             top_k=ask_req.top_k,
             score_threshold=ask_req.score_threshold,
+            answer_style=ask_req.answer_style,
         )
         logger.info(
             "Answer generation completed",
@@ -872,6 +873,7 @@ async def ask_collection(
             document_id=document_id,
             top_k=ask_req.top_k,
             score_threshold=ask_req.score_threshold,
+            answer_style=ask_req.answer_style,
         )
         logger.info(
             "Answer generation completed",

@@ -1,157 +1,193 @@
-<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 960 320' width='100%' height='100%' fill='none'>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 480" width="100%" height="100%" fill="none">
   <defs>
-    <linearGradient id='bg' x1='0%' y1='0%' x2='100%' y2='100%'>
-      <stop offset='0%' stop-color='#070B14'/>
-      <stop offset='100%' stop-color='#0E172A'/>
+    <linearGradient id="bg-pipe" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#070B14"/>
+      <stop offset="100%" stop-color="#0D1322"/>
     </linearGradient>
-    <linearGradient id='cg' x1='0%' y1='0%' x2='0%' y2='100%'>
-      <stop offset='0%' stop-color='#1E293B'/>
-      <stop offset='100%' stop-color='#111827'/>
+    <linearGradient id="card-grad2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#141E33"/>
+      <stop offset="100%" stop-color="#0D1527"/>
     </linearGradient>
-    <marker id='arr' viewBox='0 0 10 10' refX='6' refY='5' markerWidth='6' markerHeight='6' orient='auto-start-reverse'>
-      <path d='M 0 1 L 8 5 L 0 9 z' fill='#38BDF8'/>
+    <pattern id="grid-pipe" width="24" height="24" patternUnits="userSpaceOnUse">
+      <path d="M 24 0 L 0 0 0 24" fill="none" stroke="#1E293B" stroke-width="0.5" stroke-opacity="0.35"/>
+    </pattern>
+    <marker id="arr-c" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#38BDF8"/>
     </marker>
-    <marker id='arri' viewBox='0 0 10 10' refX='6' refY='5' markerWidth='6' markerHeight='6' orient='auto-start-reverse'>
-      <path d='M 0 1 L 8 5 L 0 9 z' fill='#818CF8'/>
+    <marker id="arr-m" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#818CF8"/>
     </marker>
-    <marker id='arre' viewBox='0 0 10 10' refX='6' refY='5' markerWidth='6' markerHeight='6' orient='auto-start-reverse'>
-      <path d='M 0 1 L 8 5 L 0 9 z' fill='#34D399'/>
+    <marker id="arr-v" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#34D399"/>
+    </marker>
+    <marker id="arr-g" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#94A3B8"/>
+    </marker>
+    <marker id="arr-ok" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#10B981"/>
     </marker>
   </defs>
 
-  <rect width='960' height='320' rx='14' fill='url(#bg)'/>
-  <rect width='958' height='318' x='1' y='1' rx='13' fill='none' stroke='#1E293B' stroke-width='1.5'/>
+  <!-- Background -->
+  <rect width="1100" height="480" rx="14" fill="url(#bg-pipe)"/>
+  <rect width="1100" height="480" rx="14" fill="url(#grid-pipe)"/>
+  <rect width="1098" height="478" x="1" y="1" rx="13" fill="none" stroke="#1E293B" stroke-width="1.5"/>
 
-  <text x='480' y='34' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-        font-size='17' font-weight='700' fill='#F8FAFC'>Hybrid Retrieval &amp; Reranking Pipeline</text>
-  <text x='480' y='54' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-        font-size='11.5' font-weight='400' fill='#94A3B8'>Recall@5: 0.941  •  MRR@5: 0.852  (Hybrid + Rerank, gold_dataset.jsonl, N=105)</text>
-
-  <!-- Query Box -->
-  <g transform='translate(28, 90)'>
-    <rect width='130' height='100' rx='8' fill='url(#cg)' stroke='#334155' stroke-width='1.2'/>
-    <rect x='0' y='0' width='130' height='4' rx='2' fill='#94A3B8'/>
-    <text x='65' y='30' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='11' font-weight='700' fill='#E2E8F0'>User Query</text>
-    <text x='65' y='50' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='9.5' fill='#94A3B8'>Natural language</text>
-    <text x='65' y='65' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='9.5' fill='#94A3B8'>question input</text>
-    <text x='65' y='84' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='9.5' fill='#64748B'>+ doc_id filter</text>
+  <!-- Header -->
+  <g transform="translate(40, 24)">
+    <rect x="0" y="0" width="8" height="34" rx="2" fill="#38BDF8"/>
+    <text x="20" y="20" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="17" font-weight="700" fill="#F8FAFC">RETRIEVAL &amp; GROUNDING PIPELINE</text>
+    <text x="20" y="36" font-family="'JetBrains Mono', monospace" font-size="11" fill="#64748B">Tri-Channel Search → Candidate Fusion → Cross-Encoder Rerank → Deterministic Citation Guard</text>
   </g>
 
-  <!-- Arrows from Query to three channels -->
-  <path d='M 158,110 L 190,90' stroke='#38BDF8' stroke-width='1.5' marker-end='url(#arr)'/>
-  <path d='M 158,140 L 190,140' stroke='#818CF8' stroke-width='1.5' marker-end='url(#arri)'/>
-  <path d='M 158,168 L 190,190' stroke='#34D399' stroke-width='1.5' marker-end='url(#arre)'/>
-
-  <!-- Dense Channel -->
-  <g transform='translate(192, 58)'>
-    <rect width='148' height='65' rx='7' fill='url(#cg)' stroke='#38BDF8' stroke-width='1.2'/>
-    <rect x='0' y='0' width='148' height='3' rx='1.5' fill='#38BDF8'/>
-    <text x='74' y='22' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='11.5' font-weight='700' fill='#38BDF8'>Dense Semantic</text>
-    <text x='74' y='38' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='9.5' fill='#94A3B8'>BAAI/bge-small-en-v1.5</text>
-    <text x='74' y='52' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='9' fill='#64748B'>Cosine Similarity  w=0.50</text>
+  <!-- STAGE 1: QUERY & PRE-PROCESSING -->
+  <g transform="translate(36, 175)">
+    <rect width="130" height="130" rx="8" fill="url(#card-grad2)" stroke="#334155" stroke-width="1.2"/>
+    <rect x="0" y="0" width="130" height="3" rx="1.5" fill="#38BDF8"/>
+    <text x="65" y="26" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#F1F5F9">Query Input</text>
+    <text x="65" y="44" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="9.5" fill="#94A3B8">Natural Language</text>
+    <text x="65" y="58" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="9.5" fill="#94A3B8">User Question</text>
+    <rect x="12" y="72" width="106" height="46" rx="4" fill="#090E17" stroke="#1E293B" stroke-width="1"/>
+    <text x="65" y="88" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8.5" fill="#64748B">Pre-processing</text>
+    <text x="65" y="102" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8.5" fill="#38BDF8">doc_id Filter</text>
   </g>
 
-  <!-- BM25 Channel -->
-  <g transform='translate(192, 140)'>
-    <rect width='148' height='65' rx='7' fill='url(#cg)' stroke='#818CF8' stroke-width='1.2'/>
-    <rect x='0' y='0' width='148' height='3' rx='1.5' fill='#818CF8'/>
-    <text x='74' y='22' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='11.5' font-weight='700' fill='#818CF8'>BM25 Sparse</text>
-    <text x='74' y='38' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='9.5' fill='#94A3B8'>Okapi BM25  (k1=1.2, b=0.75)</text>
-    <text x='74' y='52' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='9' fill='#64748B'>Token overlap match  w=0.30</text>
+  <!-- Split lines from Query to Tri-Channel -->
+  <path d="M 166 220 L 195 120" stroke="#38BDF8" stroke-width="1.5" marker-end="url(#arr-c)"/>
+  <path d="M 166 240 L 195 240" stroke="#818CF8" stroke-width="1.5" marker-end="url(#arr-m)"/>
+  <path d="M 166 260 L 195 360" stroke="#34D399" stroke-width="1.5" marker-end="url(#arr-v)"/>
+
+  <!-- STAGE 2: TRI-CHANNEL RETRIEVAL -->
+  <!-- Channel A: Dense -->
+  <g transform="translate(198, 75)">
+    <rect width="145" height="90" rx="6" fill="url(#card-grad2)" stroke="#38BDF8" stroke-width="1.2"/>
+    <rect x="0" y="0" width="145" height="3" rx="1.5" fill="#38BDF8"/>
+    <text x="12" y="22" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#38BDF8">DENSE RETRIEVAL</text>
+    <text x="12" y="40" font-family="'JetBrains Mono', monospace" font-size="9" fill="#E2E8F0">BAAI/bge-small-en</text>
+    <text x="12" y="54" font-family="'JetBrains Mono', monospace" font-size="8.5" fill="#94A3B8">384-dim ONNX Embed</text>
+    <text x="12" y="68" font-family="'JetBrains Mono', monospace" font-size="8.5" fill="#64748B">Qdrant Cosine Top-K</text>
+    <text x="12" y="82" font-family="'JetBrains Mono', monospace" font-size="8.5" fill="#38BDF8">Semantic Match</text>
   </g>
 
-  <!-- Visual Channel -->
-  <g transform='translate(192, 222)'>
-    <rect width='148' height='65' rx='7' fill='url(#cg)' stroke='#34D399' stroke-width='1.2'/>
-    <rect x='0' y='0' width='148' height='3' rx='1.5' fill='#34D399'/>
-    <text x='74' y='22' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='11.5' font-weight='700' fill='#34D399'>Visual Page</text>
-    <text x='74' y='38' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='9.5' fill='#94A3B8'>BAAI/bge-visualized-base</text>
-    <text x='74' y='52' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='9' fill='#64748B'>Page image Cosine  w=0.20</text>
+  <!-- Channel B: BM25 -->
+  <g transform="translate(198, 195)">
+    <rect width="145" height="90" rx="6" fill="url(#card-grad2)" stroke="#818CF8" stroke-width="1.2"/>
+    <rect x="0" y="0" width="145" height="3" rx="1.5" fill="#818CF8"/>
+    <text x="12" y="22" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#818CF8">BM25 RETRIEVAL</text>
+    <text x="12" y="40" font-family="'JetBrains Mono', monospace" font-size="9" fill="#E2E8F0">Okapi BM25 Sparse</text>
+    <text x="12" y="54" font-family="'JetBrains Mono', monospace" font-size="8.5" fill="#94A3B8">k1=1.2, b=0.75</text>
+    <text x="12" y="68" font-family="'JetBrains Mono', monospace" font-size="8.5" fill="#64748B">Token Inverted Index</text>
+    <text x="12" y="82" font-family="'JetBrains Mono', monospace" font-size="8.5" fill="#818CF8">Exact Keywords/IDs</text>
   </g>
 
-  <!-- Arrows to Fusion -->
-  <path d='M 340,90 L 380,140' stroke='#38BDF8' stroke-width='1.5' marker-end='url(#arr)'/>
-  <path d='M 340,172 L 380,160' stroke='#818CF8' stroke-width='1.5' marker-end='url(#arri)'/>
-  <path d='M 340,254 L 380,178' stroke='#34D399' stroke-width='1.5' marker-end='url(#arre)'/>
-
-  <!-- Fusion / RRF Box -->
-  <g transform='translate(382, 118)'>
-    <rect width='160' height='80' rx='7' fill='url(#cg)' stroke='#334155' stroke-width='1.2'/>
-    <rect x='0' y='0' width='160' height='3' rx='1.5' fill='#475569'/>
-    <text x='80' y='22' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='11.5' font-weight='700' fill='#F1F5F9'>Hybrid Fusion</text>
-    <text x='80' y='39' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='9.5' fill='#94A3B8'>Reciprocal Rank Fusion</text>
-    <text x='80' y='53' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='9.5' fill='#94A3B8'>RRF (k=60)</text>
-    <text x='80' y='69' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='9' fill='#64748B'>Candidates: top-20 per channel</text>
+  <!-- Channel C: Visual -->
+  <g transform="translate(198, 315)">
+    <rect width="145" height="90" rx="6" fill="url(#card-grad2)" stroke="#34D399" stroke-width="1.2"/>
+    <rect x="0" y="0" width="145" height="3" rx="1.5" fill="#34D399"/>
+    <text x="12" y="22" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#34D399">VISUAL RETRIEVAL</text>
+    <text x="12" y="40" font-family="'JetBrains Mono', monospace" font-size="9" fill="#E2E8F0">bge-visualized-base</text>
+    <text x="12" y="54" font-family="'JetBrains Mono', monospace" font-size="8.5" fill="#94A3B8">150 DPI Page Render</text>
+    <text x="12" y="68" font-family="'JetBrains Mono', monospace" font-size="8.5" fill="#64748B">Spatial Layout Embed</text>
+    <text x="12" y="82" font-family="'JetBrains Mono', monospace" font-size="8.5" fill="#34D399">Diagrams / Tables</text>
   </g>
 
-  <!-- Arrow Fusion -> Reranker -->
-  <path d='M 542,158 L 575,158' stroke='#64748B' stroke-width='1.5' stroke-dasharray='4 3' marker-end='url(#arr)'/>
+  <!-- Join lines from Tri-Channel to Fusion -->
+  <path d="M 343 120 L 375 220" stroke="#38BDF8" stroke-width="1.5" marker-end="url(#arr-c)"/>
+  <path d="M 343 240 L 375 240" stroke="#818CF8" stroke-width="1.5" marker-end="url(#arr-m)"/>
+  <path d="M 343 360 L 375 260" stroke="#34D399" stroke-width="1.5" marker-end="url(#arr-v)"/>
 
-  <!-- Reranker Box -->
-  <g transform='translate(577, 118)'>
-    <rect width='160' height='80' rx='7' fill='url(#cg)' stroke='#818CF8' stroke-width='1.5'/>
-    <rect x='0' y='0' width='160' height='3' rx='1.5' fill='#818CF8'/>
-    <text x='80' y='22' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='11.5' font-weight='700' fill='#818CF8'>Cross-Encoder Reranker</text>
-    <text x='80' y='39' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='9.5' fill='#94A3B8'>BAAI/bge-reranker-base</text>
-    <text x='80' y='53' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='9.5' fill='#94A3B8'>Full cross-attention scoring</text>
-    <text x='80' y='69' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='9' fill='#64748B'>[Q ↔ Doc] token-level attention</text>
+  <!-- STAGE 3: CANDIDATE FUSION (RRF) -->
+  <g transform="translate(378, 175)">
+    <rect width="125" height="130" rx="8" fill="url(#card-grad2)" stroke="#A78BFA" stroke-width="1.2"/>
+    <rect x="0" y="0" width="125" height="3" rx="1.5" fill="#A78BFA"/>
+    <text x="62" y="26" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11.5" font-weight="700" fill="#A78BFA">Candidate Fusion</text>
+    <text x="62" y="44" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="9" fill="#E2E8F0">Reciprocal Rank</text>
+    <text x="62" y="58" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="9" fill="#E2E8F0">Fusion (RRF)</text>
+    <rect x="10" y="70" width="105" height="48" rx="4" fill="#090E17" stroke="#1E293B" stroke-width="1"/>
+    <text x="62" y="86" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" fill="#94A3B8">k = 60 constant</text>
+    <text x="62" y="100" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">Scale-invariant rank</text>
+    <text x="62" y="112" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">Candidate union</text>
   </g>
 
-  <!-- Arrow Reranker -> Output -->
-  <path d='M 737,158 L 775,158' stroke='#34D399' stroke-width='1.5' marker-end='url(#arre)'/>
+  <!-- Arrow to Reranking -->
+  <path d="M 503 240 L 526 240" stroke="#A78BFA" stroke-width="1.5" marker-end="url(#arr-g)"/>
 
-  <!-- Output Box -->
-  <g transform='translate(777, 105)'>
-    <rect width='155' height='130' rx='7' fill='#071324' stroke='#34D399' stroke-width='1.5'/>
-    <rect x='0' y='0' width='155' height='3' rx='1.5' fill='#34D399'/>
-    <text x='77.5' y='22' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='11.5' font-weight='700' fill='#34D399'>Grounded Evidence</text>
-    <text x='77.5' y='38' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='9.5' fill='#94A3B8'>Top-5 ranked candidates</text>
-    <text x='77.5' y='56' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='9' fill='#64748B'>Recall@5: 0.941</text>
-    <text x='77.5' y='70' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='9' fill='#64748B'>MRR@5:    0.852</text>
-    <text x='77.5' y='88' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='9.5' fill='#94A3B8'>chunk_id, page_number</text>
-    <text x='77.5' y='102' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='9.5' fill='#94A3B8'>evidence text + image URL</text>
-    <text x='77.5' y='118' text-anchor='middle' font-family='-apple-system, BlinkMacSystemFont, sans-serif'
-          font-size='9' fill='#64748B'>sources: [dense, bm25, visual]</text>
+  <!-- STAGE 4: RERANKING -->
+  <g transform="translate(528, 175)">
+    <rect width="125" height="130" rx="8" fill="url(#card-grad2)" stroke="#F43F5E" stroke-width="1.2"/>
+    <rect x="0" y="0" width="125" height="3" rx="1.5" fill="#F43F5E"/>
+    <text x="62" y="26" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11.5" font-weight="700" fill="#F43F5E">Reranking</text>
+    <text x="62" y="44" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="9" fill="#E2E8F0">Cross-Encoder</text>
+    <text x="62" y="58" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8.5" fill="#94A3B8">bge-reranker-base</text>
+    <rect x="10" y="70" width="105" height="48" rx="4" fill="#090E17" stroke="#1E293B" stroke-width="1"/>
+    <text x="62" y="86" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" fill="#F43F5E">Full-Attention</text>
+    <text x="62" y="100" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">Query-Chunk pair</text>
+    <text x="62" y="112" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">Re-sort Top-K pool</text>
   </g>
 
-  <!-- legend labels -->
-  <g transform='translate(30, 285)'>
-    <circle cx='8' cy='8' r='5' fill='#38BDF8'/>
-    <text x='18' y='12' font-family='-apple-system, BlinkMacSystemFont, sans-serif' font-size='10' fill='#94A3B8'>Dense</text>
-    <circle cx='80' cy='8' r='5' fill='#818CF8'/>
-    <text x='90' y='12' font-family='-apple-system, BlinkMacSystemFont, sans-serif' font-size='10' fill='#94A3B8'>BM25 Sparse</text>
-    <circle cx='175' cy='8' r='5' fill='#34D399'/>
-    <text x='185' y='12' font-family='-apple-system, BlinkMacSystemFont, sans-serif' font-size='10' fill='#94A3B8'>Visual</text>
-    <circle cx='245' cy='8' r='5' fill='#475569'/>
-    <text x='255' y='12' font-family='-apple-system, BlinkMacSystemFont, sans-serif' font-size='10' fill='#94A3B8'>Fusion (RRF)</text>
-    <circle cx='345' cy='8' r='5' fill='#818CF8'/>
-    <text x='355' y='12' font-family='-apple-system, BlinkMacSystemFont, sans-serif' font-size='10' fill='#94A3B8'>Reranker</text>
+  <!-- Arrow to Evidence Selection & Validation -->
+  <path d="M 653 240 L 676 240" stroke="#F43F5E" stroke-width="1.5" marker-end="url(#arr-g)"/>
+
+  <!-- STAGE 5: EVIDENCE SELECTION & VALIDATION -->
+  <g transform="translate(678, 155)">
+    <rect width="130" height="170" rx="8" fill="url(#card-grad2)" stroke="#FBBF24" stroke-width="1.2"/>
+    <rect x="0" y="0" width="130" height="3" rx="1.5" fill="#FBBF24"/>
+    <text x="65" y="24" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#FBBF24">Evidence Gate</text>
+    
+    <rect x="8" y="34" width="114" height="52" rx="4" fill="#090E17" stroke="#1E293B" stroke-width="1"/>
+    <text x="65" y="48" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="600" fill="#E2E8F0">1. Selection</text>
+    <text x="65" y="62" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" fill="#94A3B8">• Deduplicate hash</text>
+    <text x="65" y="74" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" fill="#94A3B8">• Token cap budget</text>
+
+    <rect x="8" y="94" width="114" height="64" rx="4" fill="#090E17" stroke="#1E293B" stroke-width="1"/>
+    <text x="65" y="108" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="600" fill="#FBBF24">2. Validation</text>
+    <text x="65" y="122" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" fill="#94A3B8">• Page bound check</text>
+    <text x="65" y="134" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" fill="#94A3B8">• Tenant doc isolation</text>
+    <text x="65" y="148" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" fill="#F87171">• Fallback refusal</text>
+  </g>
+
+  <!-- Arrow to Generation -->
+  <path d="M 808 240 L 831 240" stroke="#FBBF24" stroke-width="1.5" marker-end="url(#arr-g)"/>
+
+  <!-- STAGE 6: GROUNDED GENERATION -->
+  <g transform="translate(833, 175)">
+    <rect width="115" height="130" rx="8" fill="url(#card-grad2)" stroke="#38BDF8" stroke-width="1.2"/>
+    <rect x="0" y="0" width="115" height="3" rx="1.5" fill="#38BDF8"/>
+    <text x="57" y="24" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#38BDF8">Generation</text>
+    <text x="57" y="42" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8.5" fill="#E2E8F0">LLM Provider</text>
+    <text x="57" y="56" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" fill="#94A3B8">Mock / Gemini / OpenAI</text>
+    <rect x="8" y="68" width="99" height="50" rx="4" fill="#090E17" stroke="#1E293B" stroke-width="1"/>
+    <text x="57" y="84" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" fill="#E2E8F0">[Evidence N] Tags</text>
+    <text x="57" y="98" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="7.5" fill="#64748B">Refusal instructions</text>
+    <text x="57" y="110" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="7.5" fill="#64748B">3 Answer styles</text>
+  </g>
+
+  <!-- Arrow to Citation Validation -->
+  <path d="M 948 240 L 971 240" stroke="#38BDF8" stroke-width="1.5" marker-end="url(#arr-g)"/>
+
+  <!-- STAGE 7: CITATION VALIDATION -->
+  <g transform="translate(973, 160)">
+    <rect width="115" height="160" rx="8" fill="url(#card-grad2)" stroke="#10B981" stroke-width="1.5"/>
+    <rect x="0" y="0" width="115" height="3" rx="1.5" fill="#10B981"/>
+    <text x="57" y="24" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" fill="#10B981">Citation Guard</text>
+    <text x="57" y="42" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8.5" fill="#E2E8F0">Deterministic</text>
+    <text x="57" y="56" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="8" fill="#94A3B8">Block-Level Check</text>
+    
+    <rect x="8" y="68" width="99" height="78" rx="4" fill="#090E17" stroke="#1E293B" stroke-width="1"/>
+    <text x="57" y="84" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="7.5" fill="#94A3B8">• Parse [Evidence N]</text>
+    <text x="57" y="98" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="7.5" fill="#94A3B8">• Verify pool match</text>
+    <text x="57" y="112" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="7.5" fill="#F87171">• Drop hallucinated</text>
+    <text x="57" y="126" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="7.5" fill="#10B981">• Attach page bboxes</text>
+    <text x="57" y="138" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="7.5" fill="#10B981">• is_grounded: true</text>
+  </g>
+
+  <!-- Bottom Metric Strip -->
+  <g transform="translate(40, 428)">
+    <rect width="1020" height="36" rx="6" fill="#0A0F1D" stroke="#1E293B" stroke-width="1"/>
+    <text x="24" y="23" font-family="'JetBrains Mono', monospace" font-size="10.5" fill="#64748B">OFFLINE REGRESSION BASELINE:</text>
+    <text x="225" y="23" font-family="'JetBrains Mono', monospace" font-size="10.5" font-weight="600" fill="#F8FAFC">Dense MRR@5: <tspan fill="#38BDF8">0.9556</tspan></text>
+    <text x="430" y="23" font-family="'JetBrains Mono', monospace" font-size="10.5" font-weight="600" fill="#F8FAFC">BM25 MRR@5: <tspan fill="#818CF8">0.9889</tspan></text>
+    <text x="635" y="23" font-family="'JetBrains Mono', monospace" font-size="10.5" font-weight="600" fill="#F8FAFC">Visual MRR@5: <tspan fill="#34D399">1.0000</tspan></text>
+    <text x="840" y="23" font-family="'JetBrains Mono', monospace" font-size="10.5" font-weight="600" fill="#F8FAFC">Hybrid+Rerank MRR@5: <tspan fill="#10B981">1.0000</tspan></text>
   </g>
 </svg>

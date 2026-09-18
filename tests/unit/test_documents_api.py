@@ -347,6 +347,60 @@ def test_ask_collection_endpoint(
     assert len(data["citations"]) > 0
 
 
+
+def test_ask_document_insufficient_evidence(
+    client: TestClient, valid_pdf_bytes: bytes
+) -> None:
+    """Verify that when no evidence is found or retrieved, a grounded refusal is returned."""
+    upload_res = client.post(
+        f"{settings.API_V1_STR}/documents/upload",
+        files={"file": ("doc.pdf", valid_pdf_bytes, "application/pdf")},
+    )
+    doc_id = upload_res.json()["document_id"]
+    client.post(f"{settings.API_V1_STR}/documents/{doc_id}/index")
+
+    # Ask with an extremely strict score threshold that filters out all retrieved evidence
+    res = client.post(
+        f"{settings.API_V1_STR}/documents/{doc_id}/ask",
+        json={"question": "Unrelated question about completely unknown subject?", "score_threshold": 0.999},
+    )
+    assert res.status_code == 200
+    data = res.json()
+    assert "sufficient information" in data["answer"].lower()
+    assert data["is_grounded"] is False
+    assert len(data["citations"]) == 0
+
+
+def test_ask_document_isolation(
+    client: TestClient, valid_pdf_bytes: bytes, multi_page_pdf_bytes: bytes
+) -> None:
+    """Verify that asking doc A only returns evidence and citations from doc A."""
+    up_a = client.post(
+        f"{settings.API_V1_STR}/documents/upload",
+        files={"file": ("docA.pdf", valid_pdf_bytes, "application/pdf")},
+    )
+    doc_a = up_a.json()["document_id"]
+    client.post(f"{settings.API_V1_STR}/documents/{doc_a}/index")
+
+    up_b = client.post(
+        f"{settings.API_V1_STR}/documents/upload",
+        files={"file": ("docB.pdf", multi_page_pdf_bytes, "application/pdf")},
+    )
+    doc_b = up_b.json()["document_id"]
+    client.post(f"{settings.API_V1_STR}/documents/{doc_b}/index")
+
+    # Query doc A
+    res_a = client.post(
+        f"{settings.API_V1_STR}/documents/{doc_a}/ask",
+        json={"question": "What is the content?", "top_k": 5},
+    )
+    assert res_a.status_code == 200
+    data_a = res_a.json()
+    assert data_a["document_id"] == doc_a
+    for cit in data_a["citations"]:
+        assert cit["document_id"] == doc_a
+        assert cit["document_id"] != doc_b
+
 def test_list_documents_endpoint(
     client: TestClient, valid_pdf_bytes: bytes, multi_page_pdf_bytes: bytes
 ) -> None:

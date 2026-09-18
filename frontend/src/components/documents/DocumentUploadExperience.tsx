@@ -310,7 +310,7 @@ export const DocumentUploadExperience: React.FC<DocumentUploadExperienceProps> =
             }`}
           >
             <Terminal className="w-3.5 h-3.5" />
-            <span>{showTelemetry ? "Hide details" : "Show processing details"}</span>
+            <span>{showTelemetry ? "Hide Technical Process" : "Show Technical Process"}</span>
           </button>
 
           {isModal && onCloseModal && (
@@ -440,9 +440,10 @@ export const DocumentUploadExperience: React.FC<DocumentUploadExperienceProps> =
                 type="button"
                 onClick={() => setShowTelemetry((prev) => !prev)}
                 className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-mono uppercase bg-surface-elevated border border-border-subtle text-text-secondary hover:text-text-primary rounded hover:border-border-strong transition-colors"
+                title="Toggle technical process telemetry"
               >
                 <Terminal className="w-3.5 h-3.5" />
-                <span>Telemetry</span>
+                <span>{showTelemetry ? "Hide Technical Process" : "Show Technical Process"}</span>
               </button>
               <button
                 type="button"
@@ -680,7 +681,7 @@ export const DocumentUploadExperience: React.FC<DocumentUploadExperienceProps> =
               </p>
             </div>
 
-            <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
+            <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto flex-wrap">
               <Button
                 variant="outline"
                 size="sm"
@@ -689,6 +690,19 @@ export const DocumentUploadExperience: React.FC<DocumentUploadExperienceProps> =
               >
                 Retry upload
               </Button>
+              <button
+                type="button"
+                onClick={() => setShowTelemetry((prev) => !prev)}
+                className={`inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-mono rounded border transition-colors ${
+                  showTelemetry
+                    ? "bg-brand text-white border-brand shadow-xs"
+                    : "bg-surface-elevated text-text-secondary border-border-subtle hover:text-text-primary hover:bg-surface-low"
+                }`}
+                title="Toggle technical process telemetry"
+              >
+                <Terminal className="w-3.5 h-3.5" />
+                <span>{showTelemetry ? "Hide Technical Process" : "Show Technical Process"}</span>
+              </button>
               <button
                 type="button"
                 onClick={() => setShowErrorDetails((prev) => !prev)}

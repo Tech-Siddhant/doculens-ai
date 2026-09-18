@@ -315,8 +315,9 @@ def test_openai_compatible_provider_http_error_does_not_leak_key() -> None:
 def test_get_llm_provider_factory() -> None:
     from app.core.config import Settings
 
-    # Default settings returns Mock provider
-    mock_provider = get_llm_provider()
+    # Mock settings returns Mock provider
+    mock_settings = Settings(LLM_PROVIDER="mock", _env_file=None)
+    mock_provider = get_llm_provider(mock_settings)
     assert isinstance(mock_provider, MockLLMProvider)
 
     # Gemini settings returns OpenAICompatibleProvider configured for Gemini
@@ -343,3 +344,34 @@ def test_get_llm_provider_factory() -> None:
     assert isinstance(openai_provider, OpenAICompatibleProvider)
     assert openai_provider.provider_name == "openai"
     assert openai_provider.api_key == "test-openai-key"
+
+
+def test_generator_answer_styles(sample_evidence: list[RetrievedChunk]) -> None:
+    """Test that AnswerGenerator passes answer_style and returns distinct outputs."""
+    gen = AnswerGenerator(provider=MockLLMProvider())
+
+    res_concise = gen.generate_answer(
+        question="What is the architecture?",
+        evidence=sample_evidence,
+        document_id="doc_123",
+        answer_style="concise",
+    )
+    assert "concise" in res_concise.answer.lower()
+    assert res_concise.is_grounded is True
+
+    res_balanced = gen.generate_answer(
+        question="What is the architecture?",
+        evidence=sample_evidence,
+        document_id="doc_123",
+        answer_style="balanced",
+    )
+    assert "conversational" in res_balanced.answer.lower()
+
+    res_detailed = gen.generate_answer(
+        question="What is the architecture?",
+        evidence=sample_evidence,
+        document_id="doc_123",
+        answer_style="detailed",
+    )
+    assert "### Detailed" in res_detailed.answer
+    assert len(res_detailed.answer) > len(res_concise.answer)

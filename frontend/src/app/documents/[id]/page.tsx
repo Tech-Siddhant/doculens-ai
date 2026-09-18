@@ -9,12 +9,14 @@ import {
   AlertCircle,
   RefreshCw,
   ArrowLeft,
+  Terminal,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { DocumentViewer } from "@/components/viewer/DocumentViewer";
 import { QuestionAnswerPanel } from "@/components/qa/QuestionAnswerPanel";
+import { TechnicalProcessSidePanel } from "@/components/qa/TechnicalProcessSidePanel";
 import { apiClient, mapBackendDocToItem } from "@/lib/api";
 import { DocumentItem, Citation } from "@/types";
 
@@ -53,6 +55,10 @@ export default function DocumentWorkspacePage() {
   useEffect(() => {
     fetchDocument();
   }, [fetchDocument]);
+
+  const [sideView, setSideView] = useState<"pdf" | "process">("pdf");
+  const [latestTrace, setLatestTrace] = useState<any>(null);
+  const [latestCitations, setLatestCitations] = useState<Citation[]>([]);
 
   const handleNavigateToPage = useCallback(
     (pageNumber: number, snippet?: string, citation?: Citation) => {
@@ -144,22 +150,87 @@ export default function DocumentWorkspacePage() {
             activeCitationPage={activeCitationPage}
             activeCitation={activeCitation}
             onSelectCitation={setActiveCitation}
+            onTraceUpdate={(trace, citations) => {
+              setLatestTrace(trace);
+              setLatestCitations(citations);
+            }}
+            isSideProcessActive={sideView === "process"}
+            onToggleSideProcess={() =>
+              setSideView((prev) => (prev === "process" ? "pdf" : "process"))
+            }
           />
         </div>
 
-        {/* Right Column: Document Viewer (7 cols on LG) */}
-        <div className="lg:col-span-7 h-[520px] sm:h-[600px] lg:h-full min-h-0 flex flex-col">
-          <DocumentViewer
-            documentId={document.id}
-            documentName={document.name}
-            totalPages={document.pageCount}
-            currentPage={currentPage}
-            onPageChange={handlePageChange}
-            status={document.status}
-            activeCitationPage={activeCitationPage}
-            activeCitationSnippet={activeCitationSnippet}
-            activeCitation={activeCitation}
-          />
+        {/* Right Column: Document Viewer or Technical Process (7 cols on LG) */}
+        <div className="lg:col-span-7 h-[520px] sm:h-[600px] lg:h-full min-h-0 flex flex-col space-y-2">
+          {/* Side View Switcher Tabs */}
+          <div className="flex items-center justify-between px-1 shrink-0">
+            <div className="inline-flex items-center p-0.5 bg-surface-low rounded-lg border border-border-subtle" role="tablist">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={sideView === "pdf"}
+                onClick={() => setSideView("pdf")}
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                  sideView === "pdf"
+                    ? "bg-surface-elevated text-text-primary shadow-xs font-semibold"
+                    : "text-text-secondary hover:text-text-primary"
+                }`}
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>Document PDF</span>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={sideView === "process"}
+                onClick={() => setSideView("process")}
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium transition-all ${
+                  sideView === "process"
+                    ? "bg-surface-elevated text-brand shadow-xs font-semibold"
+                    : "text-text-secondary hover:text-text-primary"
+                }`}
+              >
+                <Terminal className="w-3.5 h-3.5" />
+                <span>Technical Process</span>
+                {latestTrace && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                )}
+              </button>
+            </div>
+
+            <span className="text-[11px] font-mono text-text-tertiary hidden sm:inline">
+              {sideView === "pdf" ? "Page Viewer" : "Observable Telemetry"}
+            </span>
+          </div>
+
+          {/* Tab Content */}
+          <div className="flex-1 min-h-0">
+            {sideView === "pdf" ? (
+              <DocumentViewer
+                documentId={document.id}
+                documentName={document.name}
+                totalPages={document.pageCount}
+                currentPage={currentPage}
+                onPageChange={handlePageChange}
+                status={document.status}
+                activeCitationPage={activeCitationPage}
+                activeCitationSnippet={activeCitationSnippet}
+                activeCitation={activeCitation}
+              />
+            ) : (
+              <TechnicalProcessSidePanel
+                document={document}
+                trace={latestTrace}
+                citations={latestCitations}
+                onNavigateToPage={(p: number, s?: string, c?: Citation) => {
+                  handleNavigateToPage(p, s, c);
+                  setSideView("pdf");
+                }}
+                onSwitchToPdf={() => setSideView("pdf")}
+              />
+            )}
+          </div>
         </div>
       </div>
     </div>

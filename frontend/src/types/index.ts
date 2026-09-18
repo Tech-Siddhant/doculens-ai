@@ -207,6 +207,7 @@ export interface QuestionRequest {
   question: string;
   top_k?: number;
   score_threshold?: number | null;
+  answer_style?: AnswerStyle;
 }
 
 export interface PipelineStageTrace {

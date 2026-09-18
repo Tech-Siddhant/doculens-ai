@@ -1,0 +1,184 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 480" width="100%" height="100%" fill="none">
+  <defs>
+    <linearGradient id="bg-bench" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#070B14"/>
+      <stop offset="100%" stop-color="#0D1322"/>
+    </linearGradient>
+    <pattern id="grid-bench" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1E293B" stroke-width="0.5" stroke-opacity="0.35"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="960" height="480" rx="14" fill="url(#bg-bench)"/>
+  <rect width="960" height="480" rx="14" fill="url(#grid-bench)"/>
+  <rect width="958" height="478" x="1" y="1" rx="13" fill="none" stroke="#1E293B" stroke-width="1.5"/>
+
+  <!-- Title Header -->
+  <g transform="translate(36, 24)">
+    <rect x="0" y="0" width="6" height="34" rx="2" fill="#38BDF8"/>
+    <text x="18" y="18" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="700" fill="#F8FAFC">OFFLINE REGRESSION BENCHMARK: RETRIEVAL CONFIGURATIONS</text>
+    <text x="18" y="34" font-family="'JetBrains Mono', monospace" font-size="10.5" fill="#94A3B8">Synthetic / offline regression benchmark · 55 gold queries · 10 technical documents (data/gold_dataset.jsonl)</text>
+  </g>
+
+  <!-- LEFT PANEL: MRR & RECALL AT K=5 -->
+  <g transform="translate(36, 75)">
+    <rect width="425" height="270" rx="8" fill="#0B1220" stroke="#1E293B" stroke-width="1.2"/>
+    <text x="18" y="24" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#F8FAFC">Ranked Retrieval Quality (K = 5)</text>
+    <text x="18" y="38" font-family="'JetBrains Mono', monospace" font-size="9" fill="#64748B">Mean Reciprocal Rank (MRR@5) vs Recall@5</text>
+
+    <!-- Legend -->
+    <rect x="250" y="16" width="10" height="10" rx="2" fill="#38BDF8"/>
+    <text x="266" y="25" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">MRR@5</text>
+    <rect x="330" y="16" width="10" height="10" rx="2" fill="#94A3B8"/>
+    <text x="346" y="25" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">Recall@5</text>
+
+    <!-- Grid lines -->
+    <line x1="120" y1="65" x2="400" y2="65" stroke="#1E293B" stroke-width="0.8"/>
+    <line x1="120" y1="115" x2="400" y2="115" stroke="#1E293B" stroke-width="0.8"/>
+    <line x1="120" y1="165" x2="400" y2="165" stroke="#1E293B" stroke-width="0.8"/>
+    <line x1="120" y1="215" x2="400" y2="215" stroke="#1E293B" stroke-width="0.8"/>
+
+    <!-- Axis labels -->
+    <text x="120" y="248" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">0.0</text>
+    <text x="260" y="248" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">0.5</text>
+    <text x="390" y="248" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">1.0</text>
+    <line x1="120" y1="235" x2="400" y2="235" stroke="#334155" stroke-width="1"/>
+
+    <!-- Row 1: dense -->
+    <text x="18" y="76" font-family="'JetBrains Mono', monospace" font-size="9.5" fill="#E2E8F0">dense</text>
+    <rect x="120" y="62" width="267.5" height="10" rx="2" fill="#38BDF8"/>
+    <text x="395" y="71" font-family="'JetBrains Mono', monospace" font-size="8" fill="#38BDF8">0.9556</text>
+    <rect x="120" y="74" width="280" height="6" rx="2" fill="#64748B"/>
+    <text x="405" y="80" font-family="'JetBrains Mono', monospace" font-size="7.5" fill="#94A3B8">1.000</text>
+
+    <!-- Row 2: dense_bm25 -->
+    <text x="18" y="126" font-family="'JetBrains Mono', monospace" font-size="9.5" fill="#E2E8F0">dense_bm25</text>
+    <rect x="120" y="112" width="276.8" height="10" rx="2" fill="#818CF8"/>
+    <text x="402" y="121" font-family="'JetBrains Mono', monospace" font-size="8" fill="#818CF8">0.9889</text>
+    <rect x="120" y="124" width="280" height="6" rx="2" fill="#64748B"/>
+
+    <!-- Row 3: dense_bm25_visual -->
+    <text x="18" y="174" font-family="'JetBrains Mono', monospace" font-size="9" fill="#E2E8F0">dense_bm25_vis</text>
+    <rect x="120" y="162" width="280" height="10" rx="2" fill="#34D399"/>
+    <text x="405" y="171" font-family="'JetBrains Mono', monospace" font-size="8" fill="#34D399">1.0000</text>
+    <rect x="120" y="174" width="280" height="6" rx="2" fill="#64748B"/>
+
+    <!-- Row 4: hybrid_reranked -->
+    <text x="18" y="222" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#10B981">hybrid_rerank</text>
+    <rect x="120" y="210" width="280" height="10" rx="2" fill="#10B981"/>
+    <text x="405" y="219" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#10B981">1.0000</text>
+    <rect x="120" y="222" width="280" height="6" rx="2" fill="#64748B"/>
+  </g>
+
+  <!-- RIGHT PANEL: TOP-1 ACCURACY (K = 1) -->
+  <g transform="translate(480, 75)">
+    <rect width="444" height="270" rx="8" fill="#0B1220" stroke="#1E293B" stroke-width="1.2"/>
+    <text x="18" y="24" font-family="-apple-system, sans-serif" font-size="12" font-weight="700" fill="#F8FAFC">Top-1 Precision &amp; Strict Rank (K = 1)</text>
+    <text x="18" y="38" font-family="'JetBrains Mono', monospace" font-size="9" fill="#64748B">Shows where multi-channel fusion resolves top-rank ambiguity</text>
+
+    <!-- Legend -->
+    <rect x="270" y="16" width="10" height="10" rx="2" fill="#38BDF8"/>
+    <text x="286" y="25" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">Recall@1</text>
+    <rect x="350" y="16" width="10" height="10" rx="2" fill="#FBBF24"/>
+    <text x="366" y="25" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">MRR@1</text>
+
+    <!-- Grid lines -->
+    <line x1="120" y1="65" x2="410" y2="65" stroke="#1E293B" stroke-width="0.8"/>
+    <line x1="120" y1="115" x2="410" y2="115" stroke="#1E293B" stroke-width="0.8"/>
+    <line x1="120" y1="165" x2="410" y2="165" stroke="#1E293B" stroke-width="0.8"/>
+    <line x1="120" y1="215" x2="410" y2="215" stroke="#1E293B" stroke-width="0.8"/>
+
+    <!-- Axis labels -->
+    <text x="120" y="248" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">0.80</text>
+    <text x="260" y="248" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">0.90</text>
+    <text x="400" y="248" font-family="'JetBrains Mono', monospace" font-size="8" fill="#64748B">1.00</text>
+    <line x1="120" y1="235" x2="410" y2="235" stroke="#334155" stroke-width="1"/>
+
+    <!-- Row 1: dense (Recall@1: 0.900, MRR@1: 0.911) -->
+    <!-- Scale: [0.80 to 1.00] mapped to [120 to 400] -> span 280 for 0.20 -> 1400 per 1.0 -->
+    <!-- 0.900 -> 120 + 140 = 260 width 140 -->
+    <!-- 0.911 -> 120 + 155.4 = 275.4 -->
+    <text x="18" y="76" font-family="'JetBrains Mono', monospace" font-size="9.5" fill="#E2E8F0">dense</text>
+    <rect x="120" y="62" width="140" height="9" rx="2" fill="#38BDF8"/>
+    <text x="268" y="70" font-family="'JetBrains Mono', monospace" font-size="8" fill="#38BDF8">0.900</text>
+    <rect x="120" y="73" width="155.4" height="7" rx="2" fill="#FBBF24"/>
+    <text x="283" y="80" font-family="'JetBrains Mono', monospace" font-size="7.5" fill="#FBBF24">0.911</text>
+
+    <!-- Row 2: dense_bm25 (Recall@1: 0.967, MRR@1: 0.978) -->
+    <!-- 0.9667 -> 120 + 233.3 = 353.3 -->
+    <!-- 0.9778 -> 120 + 248.9 = 368.9 -->
+    <text x="18" y="126" font-family="'JetBrains Mono', monospace" font-size="9.5" fill="#E2E8F0">dense_bm25</text>
+    <rect x="120" y="112" width="233.3" height="9" rx="2" fill="#38BDF8"/>
+    <text x="360" y="120" font-family="'JetBrains Mono', monospace" font-size="8" fill="#38BDF8">0.967</text>
+    <rect x="120" y="123" width="248.9" height="7" rx="2" fill="#FBBF24"/>
+    <text x="375" y="130" font-family="'JetBrains Mono', monospace" font-size="7.5" fill="#FBBF24">0.978</text>
+
+    <!-- Row 3: dense_bm25_visual (Recall@1: 0.989, MRR@1: 1.000) -->
+    <!-- 0.9889 -> 120 + 264.4 = 384.4 -->
+    <!-- 1.0000 -> 120 + 280 = 400.0 -->
+    <text x="18" y="174" font-family="'JetBrains Mono', monospace" font-size="9" fill="#E2E8F0">dense_bm25_vis</text>
+    <rect x="120" y="162" width="264.4" height="9" rx="2" fill="#38BDF8"/>
+    <text x="390" y="170" font-family="'JetBrains Mono', monospace" font-size="8" fill="#38BDF8">0.989</text>
+    <rect x="120" y="173" width="280" height="7" rx="2" fill="#FBBF24"/>
+    <text x="405" y="180" font-family="'JetBrains Mono', monospace" font-size="7.5" fill="#FBBF24">1.000</text>
+
+    <!-- Row 4: hybrid_reranked (Recall@1: 0.989, MRR@1: 1.000) -->
+    <text x="18" y="222" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#10B981">hybrid_rerank</text>
+    <rect x="120" y="210" width="264.4" height="9" rx="2" fill="#10B981"/>
+    <text x="390" y="218" font-family="'JetBrains Mono', monospace" font-size="8" font-weight="700" fill="#10B981">0.989</text>
+    <rect x="120" y="221" width="280" height="7" rx="2" fill="#FBBF24"/>
+    <text x="405" y="228" font-family="'JetBrains Mono', monospace" font-size="7.5" font-weight="700" fill="#FBBF24">1.000</text>
+  </g>
+
+  <!-- BOTTOM TABLE: EXACT AUTHORITATIVE RESULTS -->
+  <g transform="translate(36, 360)">
+    <rect width="888" height="96" rx="8" fill="#0B1220" stroke="#1E293B" stroke-width="1.2"/>
+    
+    <!-- Table Header -->
+    <text x="18" y="24" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="700" fill="#94A3B8">CONFIGURATION</text>
+    <text x="210" y="24" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="700" fill="#94A3B8">RECALL@5</text>
+    <text x="310" y="24" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="700" fill="#94A3B8">MRR@5</text>
+    <text x="410" y="24" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="700" fill="#94A3B8">RECALL@1</text>
+    <text x="510" y="24" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="700" fill="#94A3B8">MRR@1</text>
+    <text x="610" y="24" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="700" fill="#94A3B8">CTX PRECISION</text>
+    <text x="750" y="24" font-family="'JetBrains Mono', monospace" font-size="9.5" font-weight="700" fill="#94A3B8">GATE STATUS</text>
+    <line x1="18" y1="32" x2="870" y2="32" stroke="#1E293B" stroke-width="1"/>
+
+    <!-- Row 1: dense -->
+    <text x="18" y="47" font-family="'JetBrains Mono', monospace" font-size="9" fill="#E2E8F0">dense</text>
+    <text x="210" y="47" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">1.0000</text>
+    <text x="310" y="47" font-family="'JetBrains Mono', monospace" font-size="9" fill="#38BDF8">0.9556</text>
+    <text x="410" y="47" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">0.9000</text>
+    <text x="510" y="47" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">0.9111</text>
+    <text x="610" y="47" font-family="'JetBrains Mono', monospace" font-size="9" fill="#94A3B8">0.8327</text>
+    <text x="750" y="47" font-family="'JetBrains Mono', monospace" font-size="9" fill="#10B981">PASS (min 0.75)</text>
+
+    <!-- Row 2: dense_bm25 -->
+    <text x="18" y="62" font-family="'JetBrains Mono', monospace" font-size="9" fill="#E2E8F0">dense_bm25</text>
+    <text x="210" y="62" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">1.0000</text>
+    <text x="310" y="62" font-family="'JetBrains Mono', monospace" font-size="9" fill="#818CF8">0.9889</text>
+    <text x="410" y="62" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">0.9667</text>
+    <text x="510" y="62" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">0.9778</text>
+    <text x="610" y="62" font-family="'JetBrains Mono', monospace" font-size="9" fill="#94A3B8">0.8530</text>
+    <text x="750" y="62" font-family="'JetBrains Mono', monospace" font-size="9" fill="#10B981">PASS (min 0.75)</text>
+
+    <!-- Row 3: dense_bm25_visual -->
+    <text x="18" y="77" font-family="'JetBrains Mono', monospace" font-size="9" fill="#E2E8F0">dense_bm25_visual</text>
+    <text x="210" y="77" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">1.0000</text>
+    <text x="310" y="77" font-family="'JetBrains Mono', monospace" font-size="9" fill="#34D399">1.0000</text>
+    <text x="410" y="77" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">0.9889</text>
+    <text x="510" y="77" font-family="'JetBrains Mono', monospace" font-size="9" fill="#CBD5E1">1.0000</text>
+    <text x="610" y="77" font-family="'JetBrains Mono', monospace" font-size="9" fill="#94A3B8">0.8447</text>
+    <text x="750" y="77" font-family="'JetBrains Mono', monospace" font-size="9" fill="#10B981">PASS (min 0.75)</text>
+
+    <!-- Row 4: hybrid_reranked -->
+    <text x="18" y="92" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#10B981">hybrid_reranked</text>
+    <text x="210" y="92" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#10B981">1.0000</text>
+    <text x="310" y="92" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#10B981">1.0000</text>
+    <text x="410" y="92" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#10B981">0.9889</text>
+    <text x="510" y="92" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#10B981">1.0000</text>
+    <text x="610" y="92" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#10B981">0.8399</text>
+    <text x="750" y="92" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" fill="#10B981">PASS (min 0.75)</text>
+  </g>
+</svg>

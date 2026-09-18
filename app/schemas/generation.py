@@ -25,6 +25,10 @@ class QuestionRequest(BaseModel):
         description="Maximum number of evidence chunks to retrieve (1-50)",
     )
     score_threshold: float | None = Field(default=None, ge=-1.0, le=1.0, description="Optional minimum cosine similarity score threshold")
+    answer_style: Literal["concise", "balanced", "detailed"] = Field(
+        default="balanced",
+        description="Target answer style and verbosity: concise (short direct facts), balanced (conversational explanation), or detailed (in-depth structured breakdown)"
+    )
 
 class PipelineStageStatus(str, Enum):
     SUCCESS = "success"

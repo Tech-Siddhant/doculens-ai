@@ -89,9 +89,19 @@ def clear_rate_limits_between_tests() -> None:
     clear_rate_limits()
 
 
+@pytest.fixture(autouse=True)
+def mock_llm_for_tests(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Ensure tests run offline with MockLLMProvider by default."""
+    from app.services.generator import generator
+    from app.services.llm_provider import MockLLMProvider
+    mock_p = MockLLMProvider()
+    monkeypatch.setattr(generator, "provider", mock_p)
+
+
 @pytest.fixture
 def client() -> Generator[TestClient, None, None]:
     app = create_app()
     with TestClient(app) as test_client:
         yield test_client
+
 

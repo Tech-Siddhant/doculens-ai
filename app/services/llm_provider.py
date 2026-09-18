@@ -83,16 +83,39 @@ class MockLLMProvider(BaseLLMProvider):
         )
         q_text = question_match.group(1).strip() if question_match else "the question"
 
-        content = (
-            f"Based on the provided evidence {ev_ref}, DocuLens AI answers '{q_text}' "
-            f"directly using grounded document context."
-        )
+        style = kwargs.get("answer_style")
+        if not style:
+            if "ANSWER STYLE - CONCISE" in prompt:
+                style = "concise"
+            elif "ANSWER STYLE - DETAILED" in prompt:
+                style = "detailed"
+            else:
+                style = "balanced"
+
+        if style == "concise":
+            content = f"DocuLens AI concise summary: {q_text} is directly confirmed by {ev_ref}."
+            tokens = 15
+        elif style == "detailed":
+            content = (
+                f"### Detailed Breakdown: {q_text}\n\n"
+                f"Based on the verified document excerpts, here is the comprehensive analysis:\n\n"
+                f"* **Primary Evidence**: The source explicitly documents {q_text} in {ev_ref}.\n"
+                f"* **Context & Methodology**: Grounded details confirm all operational parameters.\n\n"
+                f"### Summary\nThis detailed assessment confirms findings strictly based on {ev_ref}."
+            )
+            tokens = 60
+        else:
+            content = (
+                f"Based on the provided evidence {ev_ref}, DocuLens AI answers '{q_text}' "
+                f"directly using grounded document context with conversational explanation."
+            )
+            tokens = 30
 
         return LLMResponse(
             content=content,
             model=self.model,
             provider=self.provider,
-            usage={"prompt_tokens": 20, "completion_tokens": 20, "total_tokens": 40},
+            usage={"prompt_tokens": 20, "completion_tokens": tokens, "total_tokens": 20 + tokens},
         )
 
 
@@ -143,6 +166,7 @@ class OpenAICompatibleProvider(BaseLLMProvider):
         self.timeout = timeout
         self.max_retries = max(0, max_retries)
         self.provider_name = provider_name
+        self.provider = provider_name
 
     def generate(
         self,
@@ -247,6 +271,9 @@ class OpenAICompatibleProvider(BaseLLMProvider):
                     raise ProviderUnavailableError(
                         f"LLM provider service is temporarily unavailable (HTTP {status_code})."
                     ) from exc
+                logger.error(
+                    f"LLM provider returned unexpected HTTP {status_code}: {exc.response.text}"
+                )
                 raise ProviderError(
                     f"LLM provider API request failed with status code {status_code}."
                 ) from exc

@@ -17,10 +17,45 @@ export default function SettingsPage() {
   const [answerStyle, setAnswerStyle] = useState<AnswerStyle>("balanced");
   const [showSources, setShowSources] = useState(true);
   const [highlight, setHighlight] = useState(true);
+  const [showPipeline, setShowPipeline] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  const handleSave = () => { setSaved(true); setTimeout(() => setSaved(false), 2000); };
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("doculens_answer_style") as AnswerStyle;
+      if (stored && ["concise", "balanced", "detailed"].includes(stored)) {
+        setAnswerStyle(stored);
+      }
+      const storedPipeline = localStorage.getItem("doculens_show_pipeline");
+      if (storedPipeline !== null) {
+        setShowPipeline(storedPipeline === "true");
+      }
+    }
+  }, []);
+
+  const handleStyleChange = (val: AnswerStyle) => {
+    setAnswerStyle(val);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("doculens_answer_style", val);
+    }
+  };
+
+  const handleTogglePipeline = (val: boolean) => {
+    setShowPipeline(val);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("doculens_show_pipeline", String(val));
+    }
+  };
+
+  const handleSave = () => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("doculens_answer_style", answerStyle);
+      localStorage.setItem("doculens_show_pipeline", String(showPipeline));
+    }
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
 
   return (
     <div className="space-y-6 max-w-3xl">
@@ -36,7 +71,7 @@ export default function SettingsPage() {
             <label className="block text-xs font-semibold uppercase tracking-wider text-text-secondary mb-2">Answer Style</label>
             <div className="grid grid-cols-3 gap-2">
               {STYLES.map(({ value, label, desc }) => (
-                <button key={value} type="button" onClick={() => setAnswerStyle(value)}
+                <button key={value} type="button" onClick={() => handleStyleChange(value)}
                   className={`p-2.5 text-center rounded border ${
                     answerStyle === value ? "bg-text-primary text-white border-text-primary" : "border-border-subtle text-text-secondary bg-surface-low"
                   }`}>
@@ -84,11 +119,27 @@ export default function SettingsPage() {
         </button>
       }>
         {showAdvanced ? (
-          <div className="text-sm text-text-secondary py-2 space-y-2">
-            <p>Pipeline configuration, model preferences, and telemetry toggles planned for Phase 7.3.</p>
+          <div className="space-y-4 py-2">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={showPipeline}
+                onChange={(e) => handleTogglePipeline(e.target.checked)}
+                className="mt-0.5 w-4 h-4 border-border-strong text-brand focus:ring-0 cursor-pointer"
+              />
+              <div>
+                <div className="text-sm font-semibold text-text-primary">Show internal pipeline trace</div>
+                <div className="text-xs text-text-secondary mt-0.5">
+                  Display hybrid retrieval, BM25/vector fusion, and reranking pipeline telemetry in the Q&amp;A panel.
+                </div>
+              </div>
+            </label>
+            <p className="text-xs text-text-tertiary pt-2 border-t border-border-subtle">
+              Model preferences: Gemini 3.1 Flash-Lite (Google AI) / FastEmbed bge-small-en-v1.5 local ONNX.
+            </p>
           </div>
         ) : (
-          <p className="text-xs text-text-tertiary py-2">Expand to reveal technical settings.</p>
+          <p className="text-xs text-text-tertiary py-2">Expand to reveal technical settings and pipeline visibility.</p>
         )}
       </Card>
 

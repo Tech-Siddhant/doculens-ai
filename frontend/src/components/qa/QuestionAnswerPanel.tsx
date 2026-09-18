@@ -15,7 +15,7 @@ import {
   ShieldAlert,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import { Citation, GenerationResult, QAMessage } from "@/types";
+import { Citation, GenerationResult, QAMessage, AnswerStyle } from "@/types";
 import { apiClient } from "@/lib/api";
 import { EvidenceCard } from "@/components/evidence/EvidenceCard";
 import { EvidenceInspector } from "@/components/evidence/EvidenceInspector";
@@ -33,6 +33,9 @@ interface QuestionAnswerPanelProps {
   activeCitationPage?: number | null;
   activeCitation?: Citation | null;
   onSelectCitation?: (citation: Citation | null) => void;
+  onTraceUpdate?: (trace: any, citations: Citation[]) => void;
+  isSideProcessActive?: boolean;
+  onToggleSideProcess?: () => void;
 }
 
 const SUGGESTED_QUESTIONS = [
@@ -42,6 +45,225 @@ const SUGGESTED_QUESTIONS = [
   "What limitations or future work are identified?",
 ];
 
+interface FormattedMarkdownAnswerProps {
+  answer: string;
+  citations?: Citation[];
+  activeCitation?: Citation | null;
+  onSelectCitation: (citation: Citation) => void;
+}
+
+const FormattedMarkdownAnswer: React.FC<FormattedMarkdownAnswerProps> = ({
+  answer,
+  citations = [],
+  activeCitation,
+  onSelectCitation,
+}) => {
+  const renderInline = (text: string, keyPrefix: string) => {
+    const segments = parseInlineCitations(text, citations);
+
+    return segments.map((seg, sIdx) => {
+      const segKey = `${keyPrefix}_s_${sIdx}`;
+      if (seg.type === "citation") {
+        const cit = seg.citation;
+        if (!cit) {
+          return (
+            <span
+              key={segKey}
+              className="inline-block mx-0.5 px-1.5 py-0.5 rounded text-[11px] font-mono bg-surface-low text-text-tertiary border border-border-subtle"
+            >
+              {seg.content}
+            </span>
+          );
+        }
+        const isSelected =
+          activeCitation?.chunk_id === cit.chunk_id ||
+          (activeCitation?.rank === cit.rank && activeCitation?.page_number === cit.page_number);
+
+        return (
+          <button
+            key={segKey}
+            type="button"
+            onClick={() => onSelectCitation(cit)}
+            className={`inline-flex items-center gap-1 mx-1 px-1.5 py-0.5 rounded text-[11px] font-medium transition-all ${
+              isSelected
+                ? "bg-brand text-white shadow-xs scale-105"
+                : "bg-brand-light text-brand hover:bg-brand hover:text-white border border-brand/30"
+            }`}
+            title={cit.evidence_text || cit.text || `Jump to Page ${cit.page_number}`}
+          >
+            <span>{seg.content}</span>
+          </button>
+        );
+      }
+
+      // Parse inline markdown tokens: ***bold-italic***, **bold**, *italic*, `code`
+      const INLINE_REGEX = /(\*\*\*[^*]+\*\*\*|\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`)/g;
+      const parts = seg.content.split(INLINE_REGEX);
+
+      return (
+        <span key={segKey}>
+          {parts.map((part, pIdx) => {
+            const partKey = `${segKey}_p_${pIdx}`;
+            if (!part) return null;
+            if (part.startsWith("***") && part.endsWith("***") && part.length >= 6) {
+              return (
+                <strong key={partKey} className="font-semibold text-text-primary">
+                  <em>{part.slice(3, -3)}</em>
+                </strong>
+              );
+            }
+            if (part.startsWith("**") && part.endsWith("**") && part.length >= 4) {
+              return (
+                <strong key={partKey} className="font-semibold text-text-primary">
+                  {part.slice(2, -2)}
+                </strong>
+              );
+            }
+            if (part.startsWith("*") && part.endsWith("*") && part.length >= 2) {
+              return (
+                <em key={partKey} className="italic text-text-primary">
+                  {part.slice(1, -1)}
+                </em>
+              );
+            }
+            if (part.startsWith("`") && part.endsWith("`") && part.length >= 2) {
+              return (
+                <code
+                  key={partKey}
+                  className="px-1 py-0.5 rounded bg-surface-container border border-border-subtle font-mono text-[11px] text-text-primary"
+                >
+                  {part.slice(1, -1)}
+                </code>
+              );
+            }
+            return <span key={partKey}>{part}</span>;
+          })}
+        </span>
+      );
+    });
+  };
+
+  const rawLines = (answer || "").split(/\r?\n/);
+  type Block =
+    | { type: "h1" | "h2" | "h3"; text: string }
+    | { type: "hr" }
+    | { type: "ul"; items: string[] }
+    | { type: "ol"; items: string[] }
+    | { type: "p"; lines: string[] };
+
+  const blocks: Block[] = [];
+
+  for (const line of rawLines) {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      continue;
+    }
+
+    if (/^(\*\*\*|---|___)$/.test(trimmed)) {
+      blocks.push({ type: "hr" });
+      continue;
+    }
+
+    if (trimmed.startsWith("### ")) {
+      blocks.push({ type: "h3", text: trimmed.slice(4).trim() });
+      continue;
+    }
+    if (trimmed.startsWith("## ")) {
+      blocks.push({ type: "h2", text: trimmed.slice(3).trim() });
+      continue;
+    }
+    if (trimmed.startsWith("# ")) {
+      blocks.push({ type: "h1", text: trimmed.slice(2).trim() });
+      continue;
+    }
+
+    if (/^[*\-+]\s+/.test(trimmed)) {
+      const itemContent = trimmed.replace(/^[*\-+]\s+/, "");
+      const lastBlock = blocks[blocks.length - 1];
+      if (lastBlock && lastBlock.type === "ul") {
+        lastBlock.items.push(itemContent);
+      } else {
+        blocks.push({ type: "ul", items: [itemContent] });
+      }
+      continue;
+    }
+
+    if (/^\d+\.\s+/.test(trimmed)) {
+      const itemContent = trimmed.replace(/^\d+\.\s+/, "");
+      const lastBlock = blocks[blocks.length - 1];
+      if (lastBlock && lastBlock.type === "ol") {
+        lastBlock.items.push(itemContent);
+      } else {
+        blocks.push({ type: "ol", items: [itemContent] });
+      }
+      continue;
+    }
+
+    const lastBlock = blocks[blocks.length - 1];
+    if (lastBlock && lastBlock.type === "p") {
+      lastBlock.lines.push(trimmed);
+    } else {
+      blocks.push({ type: "p", lines: [trimmed] });
+    }
+  }
+
+  return (
+    <div className="text-xs sm:text-sm text-text-primary leading-relaxed space-y-2">
+      {blocks.map((block, bIdx) => {
+        const bKey = `b_${bIdx}`;
+        switch (block.type) {
+          case "h1":
+            return (
+              <h1 key={bKey} className="font-heading font-bold text-base text-text-primary pt-2 pb-0.5 border-b border-border-subtle">
+                {renderInline(block.text, bKey)}
+              </h1>
+            );
+          case "h2":
+            return (
+              <h2 key={bKey} className="font-heading font-bold text-sm sm:text-base text-text-primary pt-1.5 pb-0.5">
+                {renderInline(block.text, bKey)}
+              </h2>
+            );
+          case "h3":
+            return (
+              <h3 key={bKey} className="font-heading font-semibold text-xs sm:text-sm text-text-primary pt-1">
+                {renderInline(block.text, bKey)}
+              </h3>
+            );
+          case "hr":
+            return <hr key={bKey} className="my-2 border-border-subtle" />;
+          case "ul":
+            return (
+              <ul key={bKey} className="my-1.5 space-y-1 list-disc list-outside pl-4 text-text-primary">
+                {block.items.map((item, iIdx) => (
+                  <li key={`${bKey}_li_${iIdx}`} className="leading-relaxed">
+                    {renderInline(item, `${bKey}_li_${iIdx}`)}
+                  </li>
+                ))}
+              </ul>
+            );
+          case "ol":
+            return (
+              <ol key={bKey} className="my-1.5 space-y-1 list-decimal list-outside pl-4 text-text-primary">
+                {block.items.map((item, iIdx) => (
+                  <li key={`${bKey}_oli_${iIdx}`} className="leading-relaxed">
+                    {renderInline(item, `${bKey}_oli_${iIdx}`)}
+                  </li>
+                ))}
+              </ol>
+            );
+          case "p":
+            return (
+              <p key={bKey} className="leading-relaxed my-1">
+                {renderInline(block.lines.join(" "), bKey)}
+              </p>
+            );
+        }
+      })}
+    </div>
+  );
+};
+
 export const QuestionAnswerPanel: React.FC<QuestionAnswerPanelProps> = ({
   documentId,
   documentName,
@@ -49,11 +271,31 @@ export const QuestionAnswerPanel: React.FC<QuestionAnswerPanelProps> = ({
   activeCitationPage,
   activeCitation: externalActiveCitation,
   onSelectCitation,
+  onTraceUpdate,
+  isSideProcessActive,
+  onToggleSideProcess,
 }) => {
   const [questionText, setQuestionText] = useState("");
   const [messages, setMessages] = useState<QAMessage[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [internalActiveCitation, setInternalActiveCitation] = useState<Citation | null>(null);
+  const [answerStyle, setAnswerStyle] = useState<AnswerStyle>("balanced");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("doculens_answer_style") as AnswerStyle;
+      if (stored && ["concise", "balanced", "detailed"].includes(stored)) {
+        setAnswerStyle(stored);
+      }
+    }
+  }, []);
+
+  const handleStyleChange = (style: AnswerStyle) => {
+    setAnswerStyle(style);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("doculens_answer_style", style);
+    }
+  };
 
   // Inspector state
   const [inspectorOpen, setInspectorOpen] = useState(false);
@@ -61,6 +303,25 @@ export const QuestionAnswerPanel: React.FC<QuestionAnswerPanelProps> = ({
   const [inspectorSelectedCitation, setInspectorSelectedCitation] = useState<Citation | null>(null);
   const [inspectorIsGrounded, setInspectorIsGrounded] = useState(true);
   const [showPipeline, setShowPipeline] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedPipeline = localStorage.getItem("doculens_show_pipeline");
+      if (storedPipeline !== null) {
+        setShowPipeline(storedPipeline === "true");
+      }
+    }
+  }, []);
+
+  const togglePipeline = () => {
+    setShowPipeline((prev) => {
+      const next = !prev;
+      if (typeof window !== "undefined") {
+        localStorage.setItem("doculens_show_pipeline", String(next));
+      }
+      return next;
+    });
+  };
 
   const activeCitation =
     externalActiveCitation !== undefined ? externalActiveCitation : internalActiveCitation;
@@ -115,6 +376,7 @@ export const QuestionAnswerPanel: React.FC<QuestionAnswerPanelProps> = ({
       const result: GenerationResult = await apiClient.askDocument(documentId, {
         question: trimmed,
         top_k: 5,
+        answer_style: answerStyle,
       });
 
       setMessages((prev) =>
@@ -129,6 +391,11 @@ export const QuestionAnswerPanel: React.FC<QuestionAnswerPanelProps> = ({
       if (result.citations && result.citations.length > 0) {
         const topCitation = result.citations[0];
         handleSelectCitation(topCitation);
+      }
+
+      // Notify parent workspace of latest pipeline trace and citations
+      if (result.pipeline_trace) {
+        onTraceUpdate?.(result.pipeline_trace, result.citations || []);
       }
     } catch (err: unknown) {
       const errorMsg =
@@ -175,9 +442,25 @@ export const QuestionAnswerPanel: React.FC<QuestionAnswerPanelProps> = ({
             </p>
           </div>
         </div>
-        <span className="text-[11px] font-mono text-text-tertiary bg-surface-low px-2 py-0.5 rounded border border-border-subtle hidden sm:inline">
-          Grounded Q&amp;A
-        </span>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={onToggleSideProcess ? onToggleSideProcess : togglePipeline}
+            aria-pressed={isSideProcessActive !== undefined ? isSideProcessActive : showPipeline}
+            className={`inline-flex items-center gap-1.5 px-2 py-1 rounded text-[11px] font-medium transition-colors border ${
+              (isSideProcessActive !== undefined ? isSideProcessActive : showPipeline)
+                ? "bg-brand text-white border-brand shadow-xs"
+                : "bg-surface-low text-text-secondary border-border-subtle hover:text-text-primary hover:border-brand/40"
+            }`}
+            title="Toggle technical process view on the side"
+          >
+            <SlidersHorizontal className="w-3 h-3" />
+            <span>{(isSideProcessActive !== undefined ? isSideProcessActive : showPipeline) ? "Hide Technical Process" : "Show Technical Process"}</span>
+          </button>
+          <span className="text-[11px] font-mono text-text-tertiary bg-surface-low px-2 py-0.5 rounded border border-border-subtle hidden sm:inline">
+            Grounded Q&amp;A
+          </span>
+        </div>
       </div>
 
       {/* Messages Container */}
@@ -261,47 +544,13 @@ export const QuestionAnswerPanel: React.FC<QuestionAnswerPanelProps> = ({
                         </div>
                       )}
 
-                      {/* Answer Text with Interactive Inline Citations */}
-                      <div className="text-xs sm:text-sm text-text-primary leading-relaxed whitespace-pre-wrap">
-                        {parseInlineCitations(msg.result.answer, msg.result.citations).map(
-                          (seg, sIdx) => {
-                            if (seg.type === "text") {
-                              return <span key={`txt_${sIdx}`}>{seg.content}</span>;
-                            }
-                            const cit = seg.citation;
-                            if (!cit) {
-                              return (
-                                <span
-                                  key={`cit_${sIdx}`}
-                                  className="inline-block mx-0.5 px-1.5 py-0.2 rounded text-[11px] font-mono bg-surface-low text-text-tertiary border border-border-subtle"
-                                >
-                                  {seg.content}
-                                </span>
-                              );
-                            }
-                            const isSelected =
-                              activeCitation?.chunk_id === cit.chunk_id ||
-                              (activeCitation?.rank === cit.rank &&
-                                activeCitation?.page_number === cit.page_number);
-
-                            return (
-                              <button
-                                key={`cit_${sIdx}`}
-                                type="button"
-                                onClick={() => handleSelectCitation(cit)}
-                                className={`inline-flex items-center gap-1 mx-1 px-1.5 py-0.5 rounded text-[11px] font-medium transition-all ${
-                                  isSelected
-                                    ? "bg-brand text-white shadow-xs scale-105"
-                                    : "bg-brand-light text-brand hover:bg-brand hover:text-white border border-brand/30"
-                                }`}
-                                title={cit.evidence_text || cit.text || `Jump to Page ${cit.page_number}`}
-                              >
-                                <span>{seg.content}</span>
-                              </button>
-                            );
-                          }
-                        )}
-                      </div>
+                      {/* Answer Text with Interactive Inline Citations and Formatted Markdown */}
+                      <FormattedMarkdownAnswer
+                        answer={msg.result.answer}
+                        citations={msg.result.citations}
+                        activeCitation={activeCitation}
+                        onSelectCitation={handleSelectCitation}
+                      />
 
                       {/* Supporting Evidence Cards Section */}
                       {msg.result.citations && msg.result.citations.length > 0 ? (
@@ -372,7 +621,7 @@ export const QuestionAnswerPanel: React.FC<QuestionAnswerPanelProps> = ({
                             className="text-[11px] font-medium text-text-tertiary hover:text-text-primary transition-colors flex items-center gap-1"
                           >
                             <SlidersHorizontal className="w-3 h-3" />
-                            {showPipeline ? "Hide pipeline" : "Show pipeline"}
+                            {showPipeline ? "Hide Technical Process" : "Show Technical Process"}
                           </button>
                           
                           {showPipeline && (
@@ -398,6 +647,39 @@ export const QuestionAnswerPanel: React.FC<QuestionAnswerPanelProps> = ({
       {/* Input Area */}
       <div className="p-3 sm:p-4 bg-surface-elevated border-t border-border-subtle shrink-0">
         <form onSubmit={handleSubmit} className="space-y-2">
+          {/* Style Selector Controls */}
+          <div className="flex items-center justify-between px-1">
+            <div className="flex items-center gap-1.5 text-text-tertiary">
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+              <span className="text-[11px] font-medium text-text-secondary">Style:</span>
+            </div>
+            <div className="inline-flex items-center gap-1 bg-surface-low p-0.5 rounded-md border border-border-subtle" role="radiogroup" aria-label="Answer style">
+              {(["concise", "balanced", "detailed"] as AnswerStyle[]).map((st) => (
+                <button
+                  key={st}
+                  type="button"
+                  role="radio"
+                  aria-checked={answerStyle === st}
+                  onClick={() => handleStyleChange(st)}
+                  className={`px-2 py-0.5 rounded text-[11px] font-medium transition-all capitalize ${
+                    answerStyle === st
+                      ? "bg-brand text-white shadow-xs"
+                      : "text-text-secondary hover:text-text-primary hover:bg-surface-elevated"
+                  }`}
+                  title={
+                    st === "concise"
+                      ? "Concise: short direct facts, 1-2 sentences"
+                      : st === "balanced"
+                      ? "Balanced: conversational explanation with context"
+                      : "Detailed: comprehensive structured analysis with headings and bullets"
+                  }
+                >
+                  {st}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="relative flex items-end gap-2 bg-surface-low border border-border-subtle rounded-lg p-2 focus-within:border-brand focus-within:ring-1 focus-within:ring-brand transition-all">
             <textarea
               ref={textareaRef}

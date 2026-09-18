@@ -25,11 +25,12 @@ def normalize_whitespace(text: str) -> str:
     return text.strip()
 
 
-def extract_text_and_metadata(document_id: str, file_path: Path) -> ExtractionResult:
+def extract_text_and_metadata(document_id: str, file_path: Path | str) -> ExtractionResult:
     """Extract structured text page-by-page and metadata from a stored PDF file.
 
     Preserves 1-based page numbers and strict traceability.
     """
+    file_path = Path(file_path)
     if not file_path.is_file():
         raise FileNotFoundError(f"Document file not found: {file_path}")
 
@@ -48,12 +49,27 @@ def extract_text_and_metadata(document_id: str, file_path: Path) -> ExtractionRe
     creation_date = None
 
     if pdf_meta:
-        if pdf_meta.title:
-            title = str(pdf_meta.title).strip() or None
-        if pdf_meta.author:
-            author = str(pdf_meta.author).strip() or None
-        if pdf_meta.creation_date:
-            creation_date = str(pdf_meta.creation_date).strip() or None
+        try:
+            if pdf_meta.title:
+                title = str(pdf_meta.title).strip() or None
+        except Exception:
+            title = None
+
+        try:
+            if pdf_meta.author:
+                author = str(pdf_meta.author).strip() or None
+        except Exception:
+            author = None
+
+        try:
+            if pdf_meta.creation_date:
+                creation_date = str(pdf_meta.creation_date).strip() or None
+        except Exception:
+            try:
+                raw_date = pdf_meta.get("/CreationDate")
+                creation_date = str(raw_date).strip() if raw_date else None
+            except Exception:
+                creation_date = None
 
     metadata = DocumentMetadata(
         title=title,
@@ -66,7 +82,10 @@ def extract_text_and_metadata(document_id: str, file_path: Path) -> ExtractionRe
     pages: list[ExtractedPage] = []
     for idx, page in enumerate(reader.pages):
         page_number = idx + 1  # 1-based page numbering
-        raw_text = page.extract_text() or ""
+        try:
+            raw_text = page.extract_text() or ""
+        except Exception:
+            raw_text = ""
         cleaned_text = normalize_whitespace(raw_text)
         pages.append(
             ExtractedPage(

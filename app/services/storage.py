@@ -64,10 +64,13 @@ def get_stored_document(document_id: str) -> DocumentListItem | None:
     try:
         reader = PdfReader(str(file_path))
         total_pages = len(reader.pages)
-        if reader.metadata and reader.metadata.title:
-            meta_title = str(reader.metadata.title).strip()
-            if meta_title:
-                filename = meta_title if meta_title.endswith(".pdf") else f"{meta_title}.pdf"
+        try:
+            if reader.metadata and reader.metadata.title:
+                meta_title = str(reader.metadata.title).strip()
+                if meta_title:
+                    filename = meta_title if meta_title.endswith(".pdf") else f"{meta_title}.pdf"
+        except Exception:
+            pass
     except Exception:
         status = "failed"
 
