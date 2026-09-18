@@ -113,10 +113,6 @@ The core retrieval pipeline processes every query through seven sequential stage
 
 DocuLens includes a reproducible offline regression test harness (`scripts/run_evaluation.py`) designed to evaluate retrieval configurations against a curated ground-truth dataset.
 
-Yes — I’d use the **2-column technical evaluation layout**. It is cleaner for GitHub and makes the benchmark easier to scan.
-
-Use this exact section in your README:
-
 ### Evaluation Results
 
 > **Synthetic offline regression benchmark — 55 canonical queries.**  
@@ -124,21 +120,21 @@ Use this exact section in your README:
 
 <table>
 <tr>
-<td width="50%">
+<td width="50%" valign="top">
 
-### R@5 — Recall
+### R@5 — Top-5 Recall
 
 ```text
 dense                1.0000  ████████████████████
 dense+bm25           1.0000  ████████████████████
 dense+bm25_visual    1.0000  ████████████████████
 hybrid_reranked      1.0000  ████████████████████
-````
+```
 
 </td>
 <td width="50%" valign="top">
 
-### MRR@5 — Retrieval Performance
+### MRR@5 — Mean Reciprocal Rank
 
 ```text
 dense                0.9556  ███████████████████░
@@ -153,7 +149,19 @@ hybrid_reranked      1.0000  █████████████████
 <tr>
 <td width="50%" valign="top">
 
-### MRR@1 — First-Rank Retrieval
+### R@1 — Strict Evidence Recall
+
+```text
+dense                0.9000  ██████████████████░░
+dense+bm25           0.9667  ███████████████████░
+dense+bm25_visual    0.9889  ████████████████████
+hybrid_reranked      0.9889  ████████████████████
+```
+
+</td>
+<td width="50%" valign="top">
+
+### MRR@1 — First-Rank Hit Rate
 
 ```text
 dense                0.9111  ██████████████████░░
@@ -163,6 +171,9 @@ hybrid_reranked      1.0000  █████████████████
 ```
 
 </td>
+</tr>
+
+<tr>
 <td width="50%" valign="top">
 
 ### Context Precision
@@ -175,9 +186,6 @@ hybrid_reranked      0.8399  █████████████████
 ```
 
 </td>
-</tr>
-
-<tr>
 <td width="50%" valign="top">
 
 ### Context Recall
@@ -190,6 +198,9 @@ hybrid_reranked      1.0000  █████████████████
 ```
 
 </td>
+</tr>
+
+<tr>
 <td width="50%" valign="top">
 
 ### Query Category Distribution
@@ -201,6 +212,19 @@ table_lookup              3  ███
 figure_chart_analysis     2  ██
 methodology_summary       1  █
 other / unanswerable     10  ██████████
+```
+
+</td>
+<td width="50%" valign="top">
+
+### Benchmark Scope & Execution
+
+```text
+canonical_queries        55  ████████████████████
+answerable_queries       45  ████████████████████
+negative_unanswerable    10  ████████████████████
+domain_pdf_documents     10  ████████████████████
+matching_engine    deterministic [chunk-ID verified]
 ```
 
 </td>
@@ -222,12 +246,12 @@ other / unanswerable     10  ██████████
 
 ### Interpretation
 
-* **R@5** measures whether the required evidence appears within the top 5 retrieved results.
-* **MRR@5** rewards retrieving the first relevant result closer to rank 1.
-* **MRR@1** measures first-rank retrieval quality.
-* **Context Precision** measures the proportion of retrieved context considered relevant.
-* **Context Recall** measures whether the required evidence was retrieved.
-
+* **R@5 (Recall@5)**: Proportion of required ground-truth evidence pages retrieved in the top-5 candidate pool.
+* **MRR@5**: Mean Reciprocal Rank of the first relevant candidate within the top-5 candidates.
+* **R@1 (Recall@1)**: Proportion of all required ground-truth evidence pages retrieved at rank 1. Because multi-page query `q-023` requires 2 distinct pages (`[1, 2]`), a single candidate at $K=1$ can cover at most 1 page ($50\%$ recall for that query). Consequently, the exact mathematical ceiling for mean Recall@1 across the 45 answerable queries is $\frac{44 \times 1.0 + 1 \times 0.5}{45} = \mathbf{0.9889}$.
+* **MRR@1 (First-Rank Hit Rate)**: Reciprocal rank of the first relevant candidate at rank 1 ($1.0$ if the top candidate is relevant, $0.0$ otherwise). Both `dense_bm25_visual` and `hybrid_reranked` achieve $\mathbf{1.0000}$ (all 45 answerable queries surface a relevant candidate at rank 1).
+* **Context Precision**: Proportion of retrieved candidate chunks in context considered relevant.
+* **Context Recall**: Proportion of ground-truth reference evidence covered by the retrieved context.
 
 ### Measured Baseline Results
 
@@ -242,9 +266,13 @@ other / unanswerable     10  ██████████
 | **`hybrid_reranked`** | **Tri-Channel + BGE Reranker** | **1.0000** | **1.0000** | **0.9889** | **1.0000** | **0.8399** | ✅ **PASS** |
 
 ### Benchmark Observations
-- **Top-1 Precision Differentiation**: While all hybrid configurations achieve 1.000 Recall@5 on this 55-query corpus, strict **Recall@1** increases from **0.9000** (Dense alone) to **0.9889** (Hybrid + Reranker), proving that fusion and reranking resolve first-rank ambiguity.
+- **Top-1 Precision Differentiation & Metric Distinction**:
+  - While all hybrid configurations achieve **1.0000** Recall@5 on this 55-query corpus, first-rank retrieval shows marked architectural differentiation.
+  - **MRR@1 (First-Rank Hit Rate)** increases from **0.9111** (Dense alone, 41/45 queries) to **0.9778** (Dense+BM25, 44/45 queries) and reaches **1.0000** for both multimodal hybrid configurations (45/45 queries).
+  - Strict **Recall@1 (Evidence Coverage)** increases from **0.9000** (Dense alone) to **0.9889** (Hybrid + Reranker). The value caps at **0.9889** rather than 1.0000 solely because multi-page query `q-023` requires 2 distinct pages (`[1, 2]`), and a single candidate at $K=1$ can retrieve at most 1 page ($50\%$ recall). At $K \ge 3$, recall reaches 1.0000 across all answerable queries.
+  - Both metrics are authoritative, sourced directly from `data/baseline_results.json` (`k_metrics["1"]["recall"]` vs `k_metrics["1"]["mrr"]`).
 - **Lexical Recovery**: BM25 eliminates misses on exact technical identifiers (e.g., protocol names, network switch ports) where dense cosine distance falls short.
-- **Categorical Breakdown**: 35 Factoid queries, 4 Multi-Page Reasoning, 3 Table Lookups, 2 Figure/Chart Analysis, 1 Methodology Summary, plus unanswerable rejection queries.
+- **Categorical Breakdown**: 35 Factoid queries, 4 Multi-Page Reasoning, 3 Table Lookups, 2 Figure/Chart Analysis, 1 Methodology Summary, plus 10 unanswerable rejection queries.
 
 ### Evaluation Methodology & Reproducibility
 To re-run the authoritative evaluation harness locally:
