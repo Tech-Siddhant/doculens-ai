@@ -54,7 +54,7 @@ Users query ingested documents using natural language, selecting answer depth (`
 Full observability into query execution. The slide-out technical panel exposes per-stage latency, candidate counts, filter parameters, and the complete 8-stage execution trace (`trace_id`).
 
 <div align="center">
-  <img src="pages/retrieval-diagnostics.png" alt="DocuLens Pipeline Diagnostics" width="950" />
+  <img src="pages/Screenshot From 2026-09-18 15-37-19.png" alt="DocuLens Pipeline Diagnostics" width="950" />
 </div>
 
 ### 4. Document Ingestion Dashboard
