@@ -135,7 +135,7 @@ export default function SettingsPage() {
               </div>
             </label>
             <p className="text-xs text-text-tertiary pt-2 border-t border-border-subtle">
-              Model preferences: Gemini 3.1 Flash-Lite (Google AI) / FastEmbed bge-small-en-v1.5 local ONNX.
+              Pipeline preferences: Grounded LLM generation with hybrid dense vector and BM25 lexical retrieval.
             </p>
           </div>
         ) : (

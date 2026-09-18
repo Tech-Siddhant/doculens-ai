@@ -50,8 +50,8 @@ No external databases (PostgreSQL, standalone Qdrant, Redis) are required for st
    docker compose down -v
    ```
 
-### Persistent Storage
-Uploads, semantic indices, and generated artifacts are stored securely in a Docker volume (`doculens_data`) mounted to the `/app/data` workspace. No user data is lost upon container restart.
+### Storage & Persistence
+Document uploads and rendered page images are stored in a Docker volume (`doculens_data`) mounted to the `/app/data` workspace. By default, Qdrant runs embedded in-memory (`QDRANT_LOCATION=":memory:"`) for zero external database dependencies. For persistent on-disk vector storage, configure `QDRANT_PATH=/app/data/qdrant`.
 
 ---
 

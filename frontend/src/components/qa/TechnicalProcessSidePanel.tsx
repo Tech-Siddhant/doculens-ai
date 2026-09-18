@@ -154,18 +154,18 @@ export const TechnicalProcessSidePanel: React.FC<TechnicalProcessSidePanelProps>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs font-mono">
                 <div className="p-2.5 bg-surface-low rounded border border-border-subtle space-y-1">
                   <span className="text-[10px] text-text-tertiary uppercase">Vector Store</span>
-                  <p className="font-semibold text-text-primary">Qdrant In-Memory</p>
-                  <p className="text-[10px] text-text-secondary">384-dim dense vectors (bge-small-en-v1.5)</p>
+                  <p className="font-semibold text-text-primary">Dense Vector Index</p>
+                  <p className="text-[10px] text-text-secondary">Semantic dense embeddings per chunk</p>
                 </div>
                 <div className="p-2.5 bg-surface-low rounded border border-border-subtle space-y-1">
                   <span className="text-[10px] text-text-tertiary uppercase">Keyword Retriever</span>
-                  <p className="font-semibold text-text-primary">BM25Okapi Lexical</p>
+                  <p className="font-semibold text-text-primary">BM25 Lexical Index</p>
                   <p className="text-[10px] text-text-secondary">Inverted index tokenized per document</p>
                 </div>
                 <div className="p-2.5 bg-surface-low rounded border border-border-subtle space-y-1">
-                  <span className="text-[10px] text-text-tertiary uppercase">LLM Provider</span>
-                  <p className="font-semibold text-text-primary">Gemini 3.1 Flash-Lite</p>
-                  <p className="text-[10px] text-text-secondary">Grounded generation &amp; citation tags</p>
+                  <span className="text-[10px] text-text-tertiary uppercase">Generation Engine</span>
+                  <p className="font-semibold text-text-primary">Grounded LLM Generator</p>
+                  <p className="text-[10px] text-text-secondary">Strict citation validation &amp; verification</p>
                 </div>
                 <div className="p-2.5 bg-surface-low rounded border border-border-subtle space-y-1">
                   <span className="text-[10px] text-text-tertiary uppercase">Document Metadata</span>

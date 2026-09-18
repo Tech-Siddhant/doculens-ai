@@ -823,7 +823,7 @@ export const DocumentUploadExperience: React.FC<DocumentUploadExperienceProps> =
                 <span>
                   {indexingResult?.total_pages
                     ? `${indexingResult.total_pages} pages extracted`
-                    : "PyPDF + pdfplumber"}
+                    : "Document Parser"}
                 </span>
                 <span className="text-text-primary font-semibold">
                   {state === "ready" ? "VERIFIED" : state === "processing" ? "IN-FLIGHT" : "QUEUED"}
@@ -841,7 +841,7 @@ export const DocumentUploadExperience: React.FC<DocumentUploadExperienceProps> =
                 <span>
                   {indexingResult?.total_chunks
                     ? `${indexingResult.total_chunks} chunks · ${indexingResult.total_embeddings} vectors`
-                    : "Qdrant + BM25"}
+                    : "Dense + BM25"}
                 </span>
                 {telemetry?.indexingDurationMs && (
                   <span className="text-brand font-semibold">
@@ -853,8 +853,8 @@ export const DocumentUploadExperience: React.FC<DocumentUploadExperienceProps> =
           </div>
 
           <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between font-mono text-[10px] text-text-tertiary border-t border-border-subtle gap-1">
-            <span>PIPELINE: Fast Ingestion · Dense (text-embedding-004) &amp; BM25</span>
-            <span>STORAGE: data/uploads · Tenant-isolated</span>
+            <span>PIPELINE: Fast Ingestion · Dense &amp; BM25 Hybrid</span>
+            <span>STORAGE: Local Staging · Document-isolated</span>
           </div>
         </section>
       )}
