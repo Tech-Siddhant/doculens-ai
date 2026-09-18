@@ -404,14 +404,41 @@ doculens-ai/
 - **LLM Provider Dependency**: When switching from `MockLLMProvider` to live generation, latency and availability depend on upstream external APIs (Google Gemini or OpenAI).
 
 ---
+## Current Architecture
 
-## Future Work
+DocuLens AI currently uses a lightweight, local-first architecture designed to run within constrained development environments.
 
-- **Layout-Aware Token Chunking**: Integrating bounding-box level OCR tokens for precise table cell extraction.
-- **Asynchronous Ingestion Workers**: Background task queues (Celery / RQ) for multi-hundred-page document processing.
-- **Quantized Visual Models**: Deploying INT8 quantized vision backbones for reduced memory footprint on edge devices.
-- **Live User Annotation Loop**: Enabling human-in-the-loop citation correction and active-learning dataset export.
+- **Frontend:** Next.js / TypeScript
+- **Backend:** FastAPI / Python
+- **Document processing:** PDF extraction, page rendering, layout-aware processing, and chunking
+- **Embeddings & retrieval:** Dense retrieval with BM25 and hybrid/reranked retrieval
+- **Generation:** Grounded LLM/VLM provider integration
+- **Evidence:** Citation and evidence validation
+- **Storage:** Local persistent document/data storage
+- **Vector infrastructure:** Local/in-process Qdrant client using `QDRANT_LOCATION=":memory:"`
+- **Deployment:** Docker Compose for local development
 
+The current implementation intentionally avoids unnecessary distributed infrastructure. The system is designed to remain understandable, reproducible, and resource-efficient.
+
+### Future Expansion
+
+The architecture can evolve when real scale, multi-user requirements, or operational needs justify additional infrastructure.
+
+Potential future extensions include:
+
+- **PostgreSQL** for durable application metadata, users, projects, and document records
+- **External Qdrant** for persistent and scalable vector search
+- **Object storage** such as S3-compatible storage for documents, page images, and derived artifacts
+- **Authentication & authorization** for user accounts, roles, and protected resources
+- **Multi-tenancy** for isolated users, teams, and document collections
+- **Agent orchestration** for bounded tool-using workflows where deterministic pipelines become insufficient
+- **Background workers / queues** for asynchronous document processing
+- **Observability** with centralized logs, metrics, tracing, and operational dashboards
+- **Cloud deployment** with separately scalable frontend, API, workers, storage, and retrieval infrastructure
+
+These are **future architectural directions, not claims about the current implementation**. Each addition should be introduced only when a measurable product or engineering requirement justifies the added complexity.
+
+> **Architecture principle:** Start with the smallest architecture that solves the problem, measure its limitations, then introduce infrastructure when scale, reliability, security, or product requirements require it.
 ---
 
 ## License
