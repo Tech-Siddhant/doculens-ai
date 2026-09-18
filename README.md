@@ -11,7 +11,7 @@
   <p align="center">
     <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python 3.11+" /></a>
     <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-0.111.0-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI" /></a>
-    <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-14.2-000000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js" /></a>
+    <a href="https://nextjs.org/"><img src="https://img.shields.io/badge/Next.js-16.3.5-000000?style=flat-square&logo=nextdotjs&logoColor=white" alt="Next.js" /></a>
     <a href="https://github.com/Tech-Siddhant/doculens-ai/actions"><img src="https://img.shields.io/badge/Tests-483%20Passed-10B981?style=flat-square" alt="Tests 483 Passed" /></a>
     <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="License MIT" /></a>
   </p>
