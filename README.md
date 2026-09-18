@@ -113,58 +113,117 @@ The core retrieval pipeline processes every query through seven sequential stage
 
 DocuLens includes a reproducible offline regression test harness (`scripts/run_evaluation.py`) designed to evaluate retrieval configurations against a curated ground-truth dataset.
 
-Retrieval / Grounding Metrics
-────────────────────────────────────────────────────────
+````markdown
+## Evaluation Results
 
-R@5 - Recall
+> **Synthetic offline regression benchmark — 55 canonical queries.**  
+> Not a general real-world performance benchmark.
 
+<table>
+<tr>
+<td width="50%" valign="top">
+
+### R@5 — Recall
+
+```text
 dense                1.0000  ████████████████████
 dense+bm25           1.0000  ████████████████████
 dense+bm25_visual    1.0000  ████████████████████
 hybrid_reranked      1.0000  ████████████████████
+````
 
+</td>
+<td width="50%" valign="top">
 
-MRR@5 - Retrieval Performance
+### MRR@5 — Retrieval Performance
 
+```text
 dense                0.9556  ███████████████████░
 dense+bm25           0.9889  ████████████████████░
 dense+bm25_visual    1.0000  ████████████████████
 hybrid_reranked      1.0000  ████████████████████
+```
 
+</td>
+</tr>
 
-MRR@1 - Strict First-Rank
+<tr>
+<td width="50%" valign="top">
 
+### MRR@1 — First-Rank Retrieval
+
+```text
 dense                0.9111  ██████████████████░░
 dense+bm25           0.9778  ████████████████████░
 dense+bm25_visual    1.0000  ████████████████████
 hybrid_reranked      1.0000  ████████████████████
+```
 
+</td>
+<td width="50%" valign="top">
 
-Context Precision 
+### Context Precision
 
+```text
 dense                0.8327  █████████████████░░░
 dense+bm25           0.8530  █████████████████░░░
 dense+bm25_visual    0.8447  █████████████████░░░
 hybrid_reranked      0.8399  █████████████████░░░
+```
 
+</td>
+</tr>
 
-Context Recall 
+<tr>
+<td width="50%" valign="top">
 
+### Context Recall
+
+```text
 dense                1.0000  ████████████████████
 dense+bm25           1.0000  ████████████████████
 dense+bm25_visual    1.0000  ████████████████████
 hybrid_reranked      1.0000  ████████████████████
+```
 
-Query Category Distribution
-Total = 55 queries
+</td>
+<td width="50%" valign="top">
 
+### Query Category Distribution
+
+```text
 factoid_text             35  ███████████████████████████████████
 multi_page_reasoning      4  ████
 table_lookup              3  ███
 figure_chart_analysis     2  ██
 methodology_summary       1  █
 other / unanswerable     10  ██████████
+```
 
+</td>
+</tr>
+</table>
+
+### Benchmark Configuration
+
+| Property             | Value                                   |
+| -------------------- | --------------------------------------- |
+| Dataset              | 55 canonical queries                    |
+| Documents            | 10 domain PDFs                          |
+| Evaluation           | Synthetic / offline regression          |
+| Retrieval            | Dense, BM25, visual, hybrid + reranking |
+| Matching             | Deterministic chunk-ID matching         |
+| LLM responses        | Mocked                                  |
+| API key required     | No                                      |
+| Real-world benchmark | No                                      |
+
+### Interpretation
+
+* **R@5** measures whether the required evidence appears within the top 5 retrieved results.
+* **MRR@5** rewards retrieving the first relevant result closer to rank 1.
+* **MRR@1** measures first-rank retrieval quality.
+* **Context Precision** measures the proportion of retrieved context considered relevant.
+* **Context Recall** measures whether the required evidence was retrieved.
 
 ### Measured Baseline Results
 
