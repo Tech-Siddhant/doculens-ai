@@ -1,83 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 200" width="100%" height="100%" fill="none">
-  <defs>
-    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0B0F17"/>
-      <stop offset="100%" stop-color="#111827"/>
-    </linearGradient>
-    <linearGradient id="accentCyan" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#38BDF8"/>
-      <stop offset="100%" stop-color="#0284C7"/>
-    </linearGradient>
-    <linearGradient id="accentIndigo" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#818CF8"/>
-      <stop offset="100%" stop-color="#4F46E5"/>
-    </linearGradient>
-    <linearGradient id="textGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#F8FAFC"/>
-      <stop offset="100%" stop-color="#CBD5E1"/>
-    </linearGradient>
-    <filter id="subtleGlow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="6" result="blur"/>
-      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
-    </filter>
-  </defs>
-
-  <!-- Background Canvas -->
-  <rect width="800" height="200" rx="16" fill="url(#bgGrad)"/>
-  <rect width="798" height="198" x="1" y="1" rx="15" fill="none" stroke="#1E293B" stroke-width="1.5"/>
-
-  <!-- Logo Mark Graphic -->
-  <g transform="translate(60, 40)">
-    <!-- Document Backdrop Layer -->
-    <rect x="10" y="14" width="76" height="96" rx="8" fill="#1E293B" stroke="#334155" stroke-width="2" opacity="0.7"/>
-    
-    <!-- Active Document Layer -->
-    <rect x="22" y="6" width="76" height="96" rx="8" fill="#0F172A" stroke="#38BDF8" stroke-width="2"/>
-    
-    <!-- Document Lines (Text & Table Mock) -->
-    <line x1="36" y1="26" x2="68" y2="26" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
-    <line x1="36" y1="38" x2="84" y2="38" stroke="#64748B" stroke-width="2" stroke-linecap="round"/>
-    <line x1="36" y1="48" x2="78" y2="48" stroke="#64748B" stroke-width="2" stroke-linecap="round"/>
-    <line x1="36" y1="58" x2="84" y2="58" stroke="#64748B" stroke-width="2" stroke-linecap="round"/>
-    <rect x="36" y="68" width="48" height="20" rx="3" fill="#1E293B" stroke="#475569" stroke-width="1.2"/>
-    <line x1="60" y1="68" x2="60" y2="88" stroke="#475569" stroke-width="1"/>
-    <line x1="36" y1="78" x2="84" y2="78" stroke="#475569" stroke-width="1"/>
-
-    <!-- Multimodal Lens / Reticle -->
-    <circle cx="82" cy="76" r="32" fill="#0B0F17" fill-opacity="0.88" stroke="url(#accentCyan)" stroke-width="2.5" filter="url(#subtleGlow)"/>
-    <circle cx="82" cy="76" r="24" fill="none" stroke="url(#accentIndigo)" stroke-width="1.5" stroke-dasharray="3 3"/>
-    <circle cx="82" cy="76" r="8" fill="#38BDF8" fill-opacity="0.2" stroke="#38BDF8" stroke-width="1.5"/>
-    <circle cx="82" cy="76" r="2.5" fill="#38BDF8"/>
-    
-    <!-- Lens Crosshairs -->
-    <line x1="82" y1="40" x2="82" y2="48" stroke="#38BDF8" stroke-width="2" stroke-linecap="round"/>
-    <line x1="82" y1="104" x2="82" y2="112" stroke="#38BDF8" stroke-width="2" stroke-linecap="round"/>
-    <line x1="46" y1="76" x2="54" y2="76" stroke="#38BDF8" stroke-width="2" stroke-linecap="round"/>
-    <line x1="110" y1="76" x2="118" y2="76" stroke="#38BDF8" stroke-width="2" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" role="img" aria-label="DocuLens AI">
+  <rect width="320" height="96" rx="18" fill="#0b0d10"/>
+  <g transform="translate(18 16)">
+    <rect x="0" y="4" width="50" height="58" rx="8" fill="none" stroke="#f2f4f7" stroke-width="3"/>
+    <path d="M34 4v16h16M11 34h28M11 45h22" fill="none" stroke="#8b949e" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="43" cy="47" r="11" fill="#0b0d10" stroke="#f2f4f7" stroke-width="3"/>
+    <path d="m51 55 8 8" stroke="#f2f4f7" stroke-width="3" stroke-linecap="round"/>
   </g>
-
-  <!-- Typography & Tagline -->
-  <g transform="translate(200, 78)">
-    <text x="0" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="44" font-weight="800" fill="url(#textGrad)" letter-spacing="-0.03em">
-      DocuLens<tspan fill="#38BDF8">.AI</tspan>
-    </text>
-    <text x="2" y="58" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif" font-size="14" font-weight="500" fill="#94A3B8" letter-spacing="0.06em">
-      MULTIMODAL DOCUMENT INTELLIGENCE &amp; GROUNDED EVIDENCE ENGINE
-    </text>
-    
-    <!-- Feature Pill Badges -->
-    <g transform="translate(2, 74)">
-      <!-- Badge 1: Hybrid Retrieval -->
-      <rect x="0" y="0" width="132" height="22" rx="11" fill="#1E293B" stroke="#334155" stroke-width="1"/>
-      <text x="66" y="14.5" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5" font-weight="600" fill="#38BDF8" text-anchor="middle">Dense + BM25 + Visual</text>
-      
-      <!-- Badge 2: Reranked -->
-      <rect x="140" y="0" width="138" height="22" rx="11" fill="#1E293B" stroke="#334155" stroke-width="1"/>
-      <text x="209" y="14.5" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5" font-weight="600" fill="#818CF8" text-anchor="middle">Cross-Encoder Reranking</text>
-      
-      <!-- Badge 3: Citation Validated -->
-      <rect x="286" y="0" width="144" height="22" rx="11" fill="#1E293B" stroke="#334155" stroke-width="1"/>
-      <text x="358" y="14.5" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5" font-weight="600" fill="#34D399" text-anchor="middle">Deterministic Validation</text>
-    </g>
-  </g>
+  <text x="86" y="57" fill="#f2f4f7" font-family="Inter,Segoe UI,Arial,sans-serif" font-size="28" font-weight="700">DocuLens AI</text>
 </svg>
