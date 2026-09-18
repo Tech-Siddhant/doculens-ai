@@ -120,13 +120,6 @@ Use this exact section in your README:
 ````markdown
 ## Evaluation Results
 
-> **Synthetic offline regression benchmark — 55 canonical queries.**  
-> Not a general real-world performance benchmark.
-
-<table>
-<tr>
-<td width="50%" valign="top">
-
 ### R@5 — Recall
 
 ```text
