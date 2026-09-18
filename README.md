@@ -231,6 +231,8 @@ matching_engine    deterministic [chunk-ID verified]
 </tr>
 </table>
 
+Note: Benchmark scope counts describe the evaluation dataset composition; retrieval metrics are calculated separately over the 45 answerable queries.
+
 ### Benchmark Configuration
 
 | Property             | Value                                   |
