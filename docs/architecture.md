@@ -10,99 +10,102 @@ The architecture is designed to evolve from a simple text-based retrieval baseli
 
 # 1. High-Level Architecture
 
-## 1.1 System Overview
+## 1.1 Current Implemented System Overview
 
-DocuLens AI consists of five major architectural layers:
+DocuLens AI consists of five operational architectural layers:
 
-1. **Frontend** — user-facing document and question-answering interface.
-2. **API/Application Layer** — authentication, document management, orchestration, and API contracts.
-3. **Document Intelligence Layer** — PDF parsing, structure extraction, page rendering, chunking, and embedding generation.
-4. **Retrieval and Generation Layer** — dense, sparse, visual retrieval, fusion, reranking, grounding, and LLM/VLM generation.
-5. **Infrastructure Layer** — PostgreSQL, Qdrant, document storage, observability, and external AI providers.
+1. **Frontend Layer** — Next.js 16 (App Router) user interface for document upload, library management, split-screen PDF page rendering, evidence citation inspection, and pipeline telemetry observability.
+2. **API / Application Layer** — FastAPI ASGI service providing typed REST contracts, request validation, rate limiting, and end-to-end RAG pipeline orchestration.
+3. **Document Intelligence Layer** — Magic-byte validation, PyPDF text extraction, PyMuPDF 150-DPI page rendering, recursive character chunking (500 chars / 50 overlap), and FastEmbed dense/visual embeddings.
+4. **Retrieval & Grounding Layer** — Dense vector search, sparse BM25Okapi lexical retrieval, visual layout retrieval, Reciprocal Rank Fusion (RRF k=60), cross-encoder reranking, and citation grounding verification.
+5. **Infrastructure & Storage Layer** — Lightweight, local-first storage: embedded Qdrant vector store (`QDRANT_LOCATION=":memory:"` default or local directory), in-memory BM25 index, local filesystem vault (`data/uploads`, `data/rendered_pages`), and BYOK AI provider adapters.
 
 ```mermaid
 flowchart TB
 
     USER["👤 User"]
 
-    subgraph FRONTEND["Frontend Layer"]
+    subgraph FRONTEND["Frontend Layer (Implemented)"]
         UI["Next.js / TypeScript"]
-        DASHBOARD["Dashboard"]
-        DOC_UI["Document Library"]
+        DOC_UI["Document Library & Upload"]
         QUERY_UI["Question & Answer UI"]
-        EVIDENCE_UI["Evidence / Citation Viewer"]
+        EVIDENCE_UI["Side-by-Side PDF & Citation Viewer"]
+        TELEMETRY_UI["Observable Pipeline Telemetry"]
     end
 
-    subgraph API["Application / API Layer"]
-        FASTAPI["FastAPI"]
-        AUTH["Authentication & Authorization"]
-        DOC_SERVICE["Document Service"]
-        QUERY_SERVICE["Query Service"]
-        AGENT_ORCH["Agent Orchestrator"]
-        PROVIDER["AI Provider Adapter"]
+    subgraph API["Application / API Layer (Implemented)"]
+        FASTAPI["FastAPI ASGI Server"]
+        DOC_SERVICE["Document Service & File Validator"]
+        QUERY_SERVICE["Query & Evidence Service"]
+        PIPELINE["Deterministic RAG Orchestrator"]
+        METRICS["Telemetry Collector (/health/metrics)"]
+        PROVIDER["AI Provider Adapter (Mock / Gemini / OpenAI)"]
     end
 
-    subgraph DOCUMENT["Document Intelligence Layer"]
-        VALIDATE["File Validation"]
-        PARSE["PyMuPDF"]
-        STRUCTURE["Docling / Structure Extraction"]
-        RENDER["Page Rendering"]
-        CHUNK["Chunking"]
-        TEXT_EMBED["Text Embeddings"]
-        VISUAL_EMBED["Visual Embeddings"]
+    subgraph DOCUMENT["Document Intelligence Layer (Implemented)"]
+        VALIDATE["Format & Size Validation"]
+        PARSE["PyPDF Text Extractor"]
+        RENDER["PyMuPDF Page Renderer"]
+        CHUNK["Recursive Chunker"]
+        TEXT_EMBED["FastEmbed Dense Embeddings (bge-small-en-v1.5)"]
+        VISUAL_EMBED["FastEmbed Visual Embeddings (clip-ViT-B-32)"]
     end
 
-    subgraph RETRIEVAL["Retrieval Layer"]
-        DENSE["Dense Retriever"]
-        BM25["BM25 Retriever"]
-        VISUAL["Visual Retriever"]
-        FUSION["Hybrid Fusion"]
-        RERANK["Cross-Encoder Reranker"]
-        GROUND["Evidence Grounding"]
+    subgraph RETRIEVAL["Retrieval & Ranking Layer (Implemented)"]
+        DENSE["Dense Vector Retriever"]
+        BM25["BM25Okapi Lexical Retriever"]
+        VISUAL["Visual Page Layout Retriever"]
+        FUSION["Hybrid Fusion (RRF / Weighted)"]
+        RERANK["Cross-Encoder Reranker (ms-marco-MiniLM-L-6-v2)"]
+        GROUND["N-Gram & Token Citation Grounding"]
     end
 
-    subgraph STORAGE["Storage Layer"]
-        POSTGRES[("PostgreSQL")]
-        QDRANT[("Qdrant")]
-        FILESTORE[("Document / Page Storage")]
+    subgraph STORAGE["Storage Layer (Local-First / Embedded)"]
+        QDRANT[("Embedded Qdrant (:memory: / local path)")]
+        BM25_STORE[("In-Memory BM25 Index")]
+        FILESTORE[("Local Filesystem (data/uploads, rendered_pages)")]
     end
 
-    subgraph AI["External AI Providers"]
-        LLM["LLM"]
-        VLM["Vision-Language Model"]
+    subgraph AI["External / Local AI Providers"]
+        MOCK["Mock Generator (Local / Offline)"]
+        GEMINI["Google Gemini API (BYOK)"]
+        OPENAI["OpenAI API (BYOK)"]
     end
 
     USER --> UI
 
-    UI --> DASHBOARD
     UI --> DOC_UI
     UI --> QUERY_UI
     UI --> EVIDENCE_UI
+    UI --> TELEMETRY_UI
 
     UI --> FASTAPI
 
-    FASTAPI --> AUTH
     FASTAPI --> DOC_SERVICE
     FASTAPI --> QUERY_SERVICE
+    FASTAPI --> METRICS
 
     DOC_SERVICE --> VALIDATE
     VALIDATE --> PARSE
-    PARSE --> STRUCTURE
-    PARSE --> RENDER
+    VALIDATE --> RENDER
+    PARSE --> CHUNK
 
-    STRUCTURE --> CHUNK
     CHUNK --> TEXT_EMBED
+    CHUNK --> BM25_STORE
     RENDER --> VISUAL_EMBED
+    DOC_SERVICE --> FILESTORE
 
     TEXT_EMBED --> QDRANT
     VISUAL_EMBED --> QDRANT
-    CHUNK --> BM25
 
-    QUERY_SERVICE --> AGENT_ORCH
+    QUERY_SERVICE --> PIPELINE
+    PIPELINE --> DENSE
+    PIPELINE --> BM25
+    PIPELINE --> VISUAL
 
-    AGENT_ORCH --> DENSE
-    AGENT_ORCH --> BM25
-    AGENT_ORCH --> VISUAL
+    DENSE --> QDRANT
+    BM25 --> BM25_STORE
+    VISUAL --> QDRANT
 
     DENSE --> FUSION
     BM25 --> FUSION
@@ -112,15 +115,24 @@ flowchart TB
     RERANK --> GROUND
 
     GROUND --> PROVIDER
-    PROVIDER --> LLM
-    PROVIDER --> VLM
+    PROVIDER --> MOCK
+    PROVIDER --> GEMINI
+    PROVIDER --> OPENAI
 
     GROUND --> QUERY_SERVICE
     QUERY_SERVICE --> UI
-
-    DOC_SERVICE --> POSTGRES
-    DOC_SERVICE --> FILESTORE
 ```
+
+## 1.2 Planned / Future Architecture Extensions
+
+The following enterprise infrastructure modules are **planned for future phases** and are intentionally not present in the current lightweight baseline:
+
+* **PostgreSQL / Relational Metadata**: Planned for multi-user persistent accounts, query histories, and enterprise audit trails.
+* **External Distributed Qdrant**: Planned for horizontal multi-node scaling when corpus sizes exceed single-host embedded memory/disk.
+* **Cloud Object Storage (S3 / GCS / Azure Blob)**: Planned for cloud-native deployments replacing local filesystem storage.
+* **Authentication & RBAC**: Planned for multi-user multi-tenant access control and organization workspaces.
+* **Bounded Agentic Orchestration**: Planned for Phase 11 to introduce LLM tool-calling and query planning only where experimentally proven superior to deterministic RAG pipelines.
+* **Background Worker Queues (Redis / Celery)**: Planned for high-throughput batch document ingestion workflows.
 
 ---
 
@@ -177,38 +189,29 @@ flowchart LR
 ```mermaid
 flowchart TB
 
-    LOGIN["Login / Authentication"]
+    HOME["/ (Dashboard & Recent Library)"]
 
-    DASH["Dashboard"]
+    LIBRARY["/documents (Document Library & Upload Modal)"]
 
-    LIBRARY["Document Library"]
+    WORKSPACE["/documents/:id (Split Workspace)"]
 
-    UPLOAD["Upload Document"]
+    VIEWER["Side-by-Side PDF Viewer"]
 
-    PROCESS["Processing Status"]
+    QA["Grounded Q&A Interface"]
 
-    DOCUMENT["Document Viewer"]
+    TELEMETRY["Technical Process Telemetry Panel"]
 
-    QUERY["Ask Question"]
+    SETTINGS["/settings (Preferences & BYOK)"]
 
-    RESULTS["Answer + Evidence"]
+    HOME --> LIBRARY
+    HOME --> WORKSPACE
+    HOME --> SETTINGS
 
-    PROVIDER["AI Provider Settings"]
+    LIBRARY --> WORKSPACE
 
-    LOGIN --> DASH
-
-    DASH --> LIBRARY
-    DASH --> UPLOAD
-    DASH --> PROVIDER
-
-    UPLOAD --> PROCESS
-    PROCESS --> DOCUMENT
-
-    LIBRARY --> DOCUMENT
-    DOCUMENT --> QUERY
-    QUERY --> RESULTS
-
-    RESULTS --> DOCUMENT
+    WORKSPACE --> VIEWER
+    WORKSPACE --> QA
+    WORKSPACE --> TELEMETRY
 ```
 
 ## 2.3 Frontend Responsibilities
@@ -245,55 +248,64 @@ flowchart TB
 
     CLIENT["Next.js Frontend"]
 
-    subgraph FASTAPI["FastAPI Backend"]
+    subgraph FASTAPI["FastAPI Backend (Implemented)"]
 
-        ROUTER["API Router"]
+        ROUTER["API Router (/api/v1)"]
 
-        AUTH["Auth / Authorization"]
+        DOCUMENTS["Document Service (Upload, Extract, Index)"]
 
-        DOCUMENTS["Document Service"]
+        QUERIES["Grounded Q&A & Pipeline Orchestration"]
 
-        QUERIES["Query Service"]
+        PROVIDERS["Provider Adapters (Mock / Gemini / OpenAI)"]
 
-        PROVIDERS["Provider Service"]
+        METRICS["Observability & Telemetry Service"]
 
-        AGENTS["Agent Orchestrator"]
+        RETRIEVAL["Dense, BM25 & Visual Retrievers"]
 
-        RETRIEVAL["Retrieval Services"]
+        RERANKING["Cross-Encoder Reranker & Grounding"]
 
-        GENERATION["Generation Services"]
+        GENERATION["Constrained LLM Generation"]
 
+    end
+
+    subgraph PLANNED["Planned Extensions"]
+        AUTH["Auth / Multi-Tenant RBAC (Phase 10)"]
+        AGENTS["Bounded Agent Orchestrator (Phase 11)"]
     end
 
     CLIENT --> ROUTER
 
-    ROUTER --> AUTH
     ROUTER --> DOCUMENTS
     ROUTER --> QUERIES
     ROUTER --> PROVIDERS
+    ROUTER --> METRICS
 
-    QUERIES --> AGENTS
-
-    AGENTS --> RETRIEVAL
-    RETRIEVAL --> GENERATION
+    QUERIES --> RETRIEVAL
+    RETRIEVAL --> RERANKING
+    RERANKING --> GENERATION
 ```
 
-## Initial API surface
+## Implemented API Surface
 
 ```text
-POST   /documents
-GET    /documents
-GET    /documents/{document_id}
-DELETE /documents/{document_id}
+# Document Management & Ingestion
+POST   /api/v1/documents/upload                       # Upload PDF with magic-byte validation
+GET    /api/v1/documents                              # List uploaded document metadata
+GET    /api/v1/documents/{document_id}                # Retrieve document details & status
+DELETE /api/v1/documents/{document_id}                # Delete document, chunks & page assets
+POST   /api/v1/documents/{document_id}/extract        # Extract text layout & page images
+POST   /api/v1/documents/{document_id}/index          # Chunk, embed (text+visual) & index BM25
+GET    /api/v1/documents/{document_id}/pages/{n}/image# Fetch rendered page image PNG
 
-POST   /documents/{document_id}/query
+# Grounded Question Answering & Hybrid Retrieval
+POST   /api/v1/documents/{document_id}/ask            # Grounded Q&A with page-level citations
+POST   /api/v1/documents/ask                          # Cross-collection grounded Q&A
 
-GET    /documents/{document_id}/pages/{page_number}
-
-GET    /health
+# Health & Observability
+GET    /api/v1/health                                 # Process liveness check
+GET    /api/v1/health/ready                           # Deep readiness probe (storage, Qdrant, LLM)
+GET    /api/v1/health/metrics                         # Ingestion, retrieval, LLM & HTTP metrics
 ```
-
-Additional endpoints will be added only when required by the product.
 
 ---
 
@@ -612,11 +624,11 @@ grounded generation
 
 ---
 
-# 8. Agent Architecture
+# 8. Agent Architecture (Planned / Future Roadmap — Phase 11)
 
-Agents are used selectively for orchestration.
+> **Current Implementation Note:** DocuLens AI currently uses **deterministic pipeline orchestration** (retrieval -> RRF fusion -> cross-encoder reranker -> N-gram citation validation -> constrained LLM generation). Autonomous agentic planning and dynamic tool invocation are planned for **Phase 11** and will be introduced only where experimentally proven to outperform deterministic RAG.
 
-The system should not make every component autonomous.
+When introduced, agents will be used selectively and with strict boundaries for orchestration:
 
 ```mermaid
 flowchart TB
@@ -844,60 +856,47 @@ The exact supported providers will be determined during implementation based on 
 
 # 11. Storage Architecture
 
-The initial architecture uses three storage categories.
+## 11.1 Current Implemented Storage (Local-First)
+
+DocuLens AI implements a lightweight, local-first storage architecture that runs entirely self-contained without requiring external database servers:
 
 ```mermaid
 flowchart TB
 
-    APP["DocuLens Application"]
+    APP["DocuLens Application (FastAPI)"]
 
-    POSTGRES[("PostgreSQL")]
-    QDRANT[("Qdrant")]
-    OBJECT[("Document / Page Storage")]
+    FILESTORE[("Local Filesystem / Docker Volume\n/app/data (uploads, rendered_pages)")]
+    QDRANT[("Embedded Qdrant Client\n:memory: / local path")]
+    BM25[("In-Memory BM25 Index\nTokenized per document")]
 
-    APP --> POSTGRES
+    APP --> FILESTORE
     APP --> QDRANT
-    APP --> OBJECT
+    APP --> BM25
 ```
 
-## PostgreSQL
+### Document Filesystem Storage
+* **Original PDFs**: Stored under `data/uploads/{document_id}.pdf` with filename, MIME type, and size validation.
+* **Rendered Pages**: Stored under `data/rendered_pages/{document_id}/page_{n}.png` rendered at 150 DPI for visual evidence display.
+* **Persistence**: In Docker environments, `/app/data` is mounted to the named volume `doculens_data`.
 
-Stores application metadata such as:
+### Embedded Vector Store (Qdrant)
+* **Mode**: Embedded in-process client (`QDRANT_LOCATION=":memory:"` by default for zero external dependencies and fast startup; configurable to `QDRANT_PATH` for persistent disk storage).
+* **Text Chunk Collection**: `document_chunks` (384-dimensional dense vectors using `BAAI/bge-small-en-v1.5`, Cosine distance).
+* **Visual Page Collection**: `visual_pages` (512-dimensional visual vectors using `Qdrant/clip-ViT-B-32-vision`, Cosine distance).
+* **Isolation**: All queries enforce strict filtering by `document_id`.
 
-```text
-users
-documents
-pages
-processing_jobs
-provider_configurations
-queries
-usage_records
-```
+### Lexical Search Index (BM25)
+* **Mode**: In-memory tokenized BM25Okapi index per document, enabling zero-infrastructure lexical search alongside dense vectors.
 
-## Qdrant
+---
 
-Stores vector representations and retrieval metadata.
+## 11.2 Future Planned Storage (Scale-Out Architecture)
 
-Potential collections:
+When scaling beyond a single host or adding multi-user organization accounts:
 
-```text
-text_embeddings
-visual_embeddings
-```
-
-The exact collection strategy will be validated during implementation.
-
-## Document storage
-
-Stores:
-
-* original PDFs,
-* rendered page images,
-* derived document assets.
-
-Local development can use filesystem storage.
-
-Cloud deployment can later use object storage.
+* **PostgreSQL**: Planned relational metadata database for user accounts, workspace memberships, and audit logs.
+* **External Qdrant Cluster**: Planned distributed vector database when collection sizes exceed host memory/disk limits.
+* **Cloud Object Storage (S3 / MinIO / GCS)**: Planned blob storage adapter for distributed document and page image hosting.
 
 ---
 
@@ -967,60 +966,52 @@ Embedding
    ↓
 Chunk / Page
    ↓
-Document
+Document (Isolated by document_id)
    ↓
-User
+[Future: User / Tenant]
 ```
 
-This enables citation generation and user-level document isolation.
+*(Note: The current implementation isolates chunks, pages, and embeddings strictly by `document_id`. The `USER` entity and relation are defined for the planned Phase 10 multi-user authentication layer.)*
 
 ---
 
 # 13. Security Architecture
 
-Security is particularly important because the system handles:
+Security is particularly important because the system handles uploaded documents and external AI provider credentials.
 
-* user documents,
-* provider credentials,
-* potentially sensitive information.
+## 13.1 Implemented Security Controls
 
 ```mermaid
 flowchart TB
 
-    USER["User"]
+    USER["User Request"]
 
-    HTTPS["HTTPS"]
+    FRONTEND["Next.js Frontend (Zero Secrets)"]
 
-    FRONTEND["Frontend"]
+    API["FastAPI API Router"]
 
-    API["API"]
+    RATE_LIMIT["IP Rate Limiting (Configurable)"]
 
-    AUTH["Authentication"]
+    VALIDATION["File Validation (%PDF- & Size Limit)"]
 
-    AUTHZ["Authorization"]
+    SECRETS["SecretStr Backend Isolation"]
 
-    VALIDATION["Request / File Validation"]
+    ISOLATION["Strict Document ID Filter"]
 
-    SECRETS["Secret Handling"]
+    LOGGING["Sanitized Structured Logging"]
 
-    ISOLATION["User / Document Isolation"]
+    PROVIDER["External AI Provider (HTTPS BYOK)"]
 
-    LOGGING["Safe Logging"]
+    STORAGE["Local Staging Storage"]
 
-    PROVIDER["External AI Provider"]
-
-    STORAGE["Application Storage"]
-
-    USER --> HTTPS
-    HTTPS --> FRONTEND
+    USER --> FRONTEND
     FRONTEND --> API
 
-    API --> AUTH
-    AUTH --> AUTHZ
-    AUTHZ --> VALIDATION
+    API --> RATE_LIMIT
+    RATE_LIMIT --> VALIDATION
 
-    VALIDATION --> SECRETS
     VALIDATION --> ISOLATION
+    VALIDATION --> SECRETS
 
     ISOLATION --> STORAGE
     SECRETS --> PROVIDER
@@ -1028,21 +1019,16 @@ flowchart TB
     API --> LOGGING
 ```
 
-Security requirements include:
+* **Client-Side Secret Isolation**: Third-party API keys (e.g. `GEMINI_API_KEY`, `LLM_API_KEY`) and internal configuration (`QDRANT_LOCATION`) are never bundled, transmitted, or accessible in frontend client code.
+* **Upload Security**: Only PDF documents with valid `%PDF-` magic bytes are processed. Content-Type and strict 10 MB size limits are enforced at the HTTP boundary.
+* **Document Isolation**: Vector store and BM25 searches require a non-empty `document_id` filter to prevent cross-document data leakage.
+* **Safe Error Handling**: Internal stack traces, database locations, and filesystem paths are suppressed from client responses.
 
-* never commit provider API keys,
-* never expose server-side secrets to the browser,
-* never log raw credentials,
-* validate uploaded files,
-* enforce file-size limits,
-* isolate documents by user,
-* authorize document access,
-* protect internal APIs,
-* validate model responses,
-* restrict agent tools,
-* avoid sensitive information in traces.
+## 13.2 Planned Security Controls (Phase 10 Roadmap)
 
-Security controls will evolve as authentication, multi-user behavior, and cloud deployment are introduced.
+* **User Authentication & Authorization**: OAuth2 / JWT user login and role-based access control (RBAC).
+* **Multi-Tenant Organization Workspaces**: Cryptographic user/workspace isolation across shared infrastructure.
+* **KMS / Hardware Encryption**: Enterprise key-management service encryption at rest for cloud deployments.
 
 ---
 
@@ -1125,49 +1111,52 @@ The reference specifically identifies ingestion, retrieval, generation latency a
 
 # 15. Deployment Architecture
 
-The first deployment target is Docker Compose.
+DocuLens AI provides reproducible deployment workflows via **Docker Compose** as well as local bare-metal configurations.
+
+## 15.1 Current Implemented Deployment (Self-Contained Docker Compose)
+
+The production stack consists of two minimal, self-contained containers with zero external database dependencies:
 
 ```mermaid
 flowchart TB
 
     USER["User Browser"]
 
-    FRONTEND["Next.js Container"]
+    FRONTEND["Frontend Container\n(Next.js 16 Standalone :3000)"]
 
-    BACKEND["FastAPI Container"]
+    BACKEND["Backend Container\n(FastAPI ASGI :8000)"]
 
-    POSTGRES[("PostgreSQL Container")]
+    EMBEDDED_QDRANT[("Embedded Qdrant Client\n(:memory: / local path)")]
 
-    QDRANT[("Qdrant Container")]
+    VOLUME[("Docker Volume (doculens_data)\n/app/data (uploads, rendered_pages)")]
 
-    STORAGE[("Local / Object Storage")]
-
-    AI["User-selected AI Provider"]
+    AI["AI Provider\n(Mock / Gemini / OpenAI BYOK)"]
 
     USER --> FRONTEND
-
     FRONTEND --> BACKEND
 
-    BACKEND --> POSTGRES
-    BACKEND --> QDRANT
-    BACKEND --> STORAGE
-
+    BACKEND --> EMBEDDED_QDRANT
+    BACKEND --> VOLUME
     BACKEND --> AI
 ```
 
-## Development deployment
-
+### Container Topology
 ```text
-Docker Compose
-├── frontend
-├── backend
-├── postgres
-└── qdrant
+Docker Compose (Implemented Stack)
+├── frontend  # Next.js 16 standalone server on port 3000
+└── backend   # FastAPI ASGI server on port 8000 (embedded Qdrant + volume /app/data)
 ```
 
-Document processing and model workloads may run inside the backend initially.
+* **Zero External Databases**: No PostgreSQL, standalone Qdrant, Redis, or Celery containers are required for standard deployment.
+* **Persistent Workspace**: Uploaded PDFs and rendered page images are stored in the Docker volume (`doculens_data`) mounted to `/app/data`.
+* **Resource Budget**: Operates within <=6 GB RAM and <=25 GB disk footprints (Codespaces-compatible).
 
-If workload characteristics justify separation later, background workers can be introduced.
+## 15.2 Planned Future Scale-Out Options
+
+If enterprise workloads require multi-node scaling:
+* **Standalone Qdrant Cluster**: Run dedicated Qdrant nodes for massive document collections.
+* **PostgreSQL Service**: Dedicated relational container for multi-tenant accounts and search histories.
+* **Asynchronous Background Workers**: Redis / Celery task queues for distributed batch extraction.
 
 ---
 
@@ -1342,30 +1331,32 @@ flowchart LR
 
 ---
 
-## 17.2 V1 — Multimodal Retrieval
+## 17.2 Current Implementation — V1 Multimodal Hybrid RAG
+
+This represents the operational baseline currently implemented in DocuLens AI:
 
 ```mermaid
 flowchart TB
 
-    PDF["PDF"]
+    PDF["PDF Document"]
 
-    TEXT["Text + Structure"]
+    TEXT["PyPDF Text Chunks"]
 
-    PAGES["Rendered Pages"]
+    PAGES["PyMuPDF Rendered Pages"]
 
-    DENSE["Dense Retrieval"]
+    DENSE["Dense Vector Search (FastEmbed)"]
 
-    BM25["BM25"]
+    BM25["BM25Okapi Lexical Search"]
 
-    VISUAL["Visual Retrieval"]
+    VISUAL["Visual Page Search (CLIP)"]
 
-    FUSION["Hybrid Fusion"]
+    FUSION["Reciprocal Rank Fusion (k=60)"]
 
-    RERANK["Reranker"]
+    RERANK["Cross-Encoder Reranker"]
 
-    GENERATE["Grounded LLM / VLM"]
+    GENERATE["Grounded LLM Generator"]
 
-    RESPONSE["Answer + Evidence"]
+    RESPONSE["Answer + Verified Page Citations"]
 
     PDF --> TEXT
     PDF --> PAGES
@@ -1386,7 +1377,9 @@ flowchart TB
 
 ---
 
-## 17.3 Agentic Layer
+## 17.3 Planned Future Phase — Bounded Agentic Layer (Phase 11)
+
+> **Status:** Planned / Future Roadmap. Autonomous agents will be introduced only after deterministic hybrid pipelines are benchmarked.
 
 ```mermaid
 flowchart TB
@@ -1418,7 +1411,9 @@ Agents are introduced only after the underlying retrieval capabilities exist and
 
 ---
 
-## 17.4 Full Product Architecture
+## 17.4 Planned Future Phase — Scaled Enterprise & Cloud Architecture (Phase 12+)
+
+> **Status:** Planned / Future Roadmap for multi-user organization deployment. Not required for current local-first deployment.
 
 ```mermaid
 flowchart TB

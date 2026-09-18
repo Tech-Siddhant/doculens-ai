@@ -1184,21 +1184,17 @@ flowchart TD
 
     CODE["Source Code"]
 
-    TEST["Automated Tests"]
+    TEST["Automated Tests (pytest + node:test)"]
 
-    LINT["Lint / Type Checks"]
+    LINT["Lint / Type Checks (tsc + pythonpath)"]
 
-    BUILD["Build Containers"]
+    BUILD["Build Containers (Dockerfile + frontend/Dockerfile)"]
 
     COMPOSE["Docker Compose"]
 
-    FRONTEND["Frontend Container"]
+    FRONTEND["Frontend Container (Next.js :3000)"]
 
-    BACKEND["Backend Container"]
-
-    POSTGRES["PostgreSQL"]
-
-    QDRANT["Qdrant"]
+    BACKEND["Backend Container (FastAPI :8000\n+ Embedded Qdrant & /app/data Volume)"]
 
     USER["User"]
 
@@ -1210,12 +1206,12 @@ flowchart TD
 
     COMPOSE --> FRONTEND
     COMPOSE --> BACKEND
-    COMPOSE --> POSTGRES
-    COMPOSE --> QDRANT
 
     USER --> FRONTEND
     FRONTEND --> BACKEND
 ```
+
+*(Note: The implemented production Compose stack runs strictly `frontend` and `backend` with embedded Qdrant `:memory:` and named volume `doculens_data`. Zero external database containers are required.)*
 
 ---
 

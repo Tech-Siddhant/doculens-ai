@@ -17,48 +17,39 @@ All improvements must be experimentally measured before being claimed.
 ## 2. Project Roadmap
 
 ```text
-Phase 1
-Repository & Development Foundation
+[CURRENT / IMPLEMENTED]
+Phase 1: Repository & Development Foundation  [DONE]
         ↓
-Phase 2
-Text RAG Baseline
+Phase 2: Text RAG Baseline                    [DONE]
         ↓
-Phase 3
-Visual Document Pipeline
+Phase 3: Visual Document Pipeline             [DONE]
         ↓
-Phase 4
-Hybrid Retrieval
+Phase 4: Hybrid Retrieval                     [DONE]
         ↓
-Phase 5
-Reranking & Grounded Generation
+Phase 5: Reranking & Grounded Generation      [DONE]
         ↓
-Phase 6
-Evaluation & Failure Analysis
+Phase 6: Evaluation & Failure Analysis        [DONE]
         ↓
-Phase 7
-Frontend Product Demo
+Phase 7: Frontend Product Demo                [DONE]
         ↓
-Phase 8
-Reproducible Deployment
+Phase 8: Reproducible Deployment (Docker)     [DONE]
         ↓
-Phase 9
-Reliability & Observability
+Phase 9: Reliability & Observability          [DONE]
         ↓
-Phase 10
-Security & BYOK
+[PARTIALLY IMPLEMENTED / HARDENED]
+Phase 10: Security & BYOK (BYOK/Isolation [DONE]; Auth [PLANNED])
         ↓
-Phase 11
-Bounded Agentic Orchestration
+[FUTURE / PLANNED ROADMAP]
+Phase 11: Bounded Agentic Orchestration       [PLANNED]
         ↓
-Phase 12
-Advanced Capabilities
-````
+Phase 12: Advanced Capabilities               [PLANNED]
+```
 
 ---
 
 ## 3. Phase Summary
 
-### Phase 1 — Repository & Development Foundation
+### Phase 1 — Repository & Development Foundation [IMPLEMENTED]
 
 **Objective:**
 Create a clean, runnable development foundation.
@@ -79,7 +70,7 @@ Application runs locally and tests execute successfully.
 
 ---
 
-### Phase 2 — Text RAG Baseline
+### Phase 2 — Text RAG Baseline [IMPLEMENTED]
 
 **Objective:**
 Build the simplest complete document QA system and establish the baseline.
@@ -112,7 +103,7 @@ A technical PDF can be ingested and queried end-to-end.
 
 ---
 
-### Phase 3 — Visual Document Pipeline
+### Phase 3 — Visual Document Pipeline [IMPLEMENTED]
 
 **Objective:**
 Add page-level visual representations for information that text extraction may lose.
@@ -130,7 +121,7 @@ Relevant visual pages can be retrieved for appropriate queries.
 
 ---
 
-### Phase 4 — Hybrid Retrieval
+### Phase 4 — Hybrid Retrieval [IMPLEMENTED]
 
 **Objective:**
 Combine complementary retrieval methods.
@@ -158,7 +149,7 @@ Hybrid retrieval can be compared against the existing baseline using retrieval m
 
 ---
 
-### Phase 5 — Reranking & Grounded Generation
+### Phase 5 — Reranking & Grounded Generation [IMPLEMENTED]
 
 **Objective:**
 Improve evidence selection and constrain generation to retrieved evidence.
@@ -177,7 +168,7 @@ Answers are traceable to retrieved document evidence and unsupported answers are
 
 ---
 
-### Phase 6 — Evaluation & Failure Analysis
+### Phase 6 — Evaluation & Failure Analysis [IMPLEMENTED]
 
 **Objective:**
 Measure system quality and determine whether architectural improvements actually help.
@@ -208,7 +199,7 @@ Experiments are reproducible and measured results are documented.
 
 ---
 
-### Phase 7 — Frontend Product Demo
+### Phase 7 — Frontend Product Demo [IMPLEMENTED]
 
 **Objective:**
 Provide a simple interface for demonstrating the complete workflow.
@@ -226,14 +217,14 @@ A user can complete the core workflow through the UI.
 
 ---
 
-### Phase 8 — Reproducible Deployment
+### Phase 8 — Reproducible Deployment [IMPLEMENTED]
 
 **Objective:**
 Make the project easy to run in a clean environment.
 
 **Deliverables:**
 
-* Docker configuration
+* Docker configuration (self-contained 2-container compose stack)
 * Local service setup
 * Environment configuration
 * Reproducible setup instructions
@@ -243,7 +234,7 @@ Another developer can run the system using the documented setup.
 
 ---
 
-### Phase 9 — Reliability & Observability
+### Phase 9 — Reliability & Observability [IMPLEMENTED]
 
 **Objective:**
 Make important system behavior and failures visible.
@@ -264,30 +255,24 @@ Important failure paths are handled and observable.
 
 ---
 
-### Phase 10 — Security & BYOK
+### Phase 10 — Security & BYOK [PARTIALLY IMPLEMENTED / HARDENED]
 
 **Objective:**
 Secure uploaded documents and external AI provider credentials.
 
-**Focus:**
-
-* Credential protection
-* Provider configuration
-* User/document isolation
-* File validation
-* Rate limiting
-* Prompt-injection considerations
-* Safe error handling
+**Status:**
+* **Implemented**: BYOK API key protection (`SecretStr`), file magic-byte & size validation, `document_id` query isolation, client error sanitization, rate limiting.
+* **Planned**: Multi-user authentication & authorization (OAuth2 / JWT / RBAC), multi-tenant organization boundaries.
 
 **Gate:**
 Security-sensitive flows are documented and tested.
 
 ---
 
-### Phase 11 — Bounded Agentic Orchestration
+### Phase 11 — Bounded Agentic Orchestration [PLANNED / FUTURE ROADMAP]
 
 **Objective:**
-Introduce agents only if they provide measurable value.
+Introduce agents only if they provide measurable value over deterministic hybrid RAG pipelines.
 
 **Potential responsibilities:**
 
@@ -302,7 +287,7 @@ Agentic orchestration demonstrates measurable benefit over the deterministic wor
 
 ---
 
-### Phase 12 — Advanced Capabilities
+### Phase 12 — Advanced Capabilities [PLANNED / FUTURE ROADMAP]
 
 Only build capabilities justified by actual requirements or evaluation results.
 

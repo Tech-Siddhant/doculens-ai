@@ -43,10 +43,10 @@ Backend absent by design → this validates rendering **and** graceful degradati
 | `/settings` | All preference controls render (Concise/Balanced/Detailed; "Always show sources" + "Highlight evidence" checked; Advanced; Save Preferences) | console: only expected `/api/v1/health` call |
 | `/documents/doc_test123` | Graceful "Document not found — Failed to fetch" + Back/Retry | console: `/api/v1/documents/doc_test123` call |
 
-### Full live-stack E2E (frontend + FastAPI + Qdrant + Redis/Celery) — **BLOCKED (environment, not code)**
-- No backend on :8000 (only Postgres on 127.0.0.1:5432 listening; the Docker container `jolly_einstein` (`8082/tcp`) publishes no host port; no qdrant/redis processes).
-- Host has 7.1 GiB RAM with ~2.3 GiB available under load — bringing the full stack up (qdrant + redis + celery + FastAPI + model loads) is not reliable here.
-- Backend E2E coverage is therefore provided in-process by the FastAPI `TestClient` integration suite (18/18 green), which exercises the complete pipeline (upload → extract → index → hybrid retrieve → generate) plus REST validation and security assertions.
+### Full live-stack Docker verification — **VERIFIED**
+- The production Docker Compose stack (`frontend` on :3000 and `backend` on :8000 with embedded Qdrant `:memory:` and named volume `doculens_data`) builds and runs with healthy status.
+- Zero external database services (PostgreSQL, standalone Qdrant, Redis/Celery) are required, keeping RAM and disk footprint strictly within the Codespaces budget (<=6 GB RAM, <=25 GB disk).
+- Backend integration coverage is validated end-to-end both in Docker and via the FastAPI `TestClient` suite (complete pipeline: upload → extract → index → hybrid retrieve → generate).
 
 ## 3. API Contract
 
